@@ -1,0 +1,56 @@
+
+.main-config-panel {
+  width: 340px;
+  flex: none;
+  display: flex;
+  justify-content: flex-start;
+  gap: 20px;
+  flex-direction: column;
+  border-left: var(--ccm-chart-N300) 1px solid;
+  box-sizing: border-box;
+  background: var(--ccm-chart-N00);
+}
+
+.form {
+  flex-grow: 1;
+}
+.semi-tabs-bar{
+  padding: 0 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  .semi-tabs-tab{
+    margin: 0 35px;
+  }
+  .semi-tabs-tab-single.semi-tabs-tab{
+    color: var(--semi-color-text-0);
+    &:hover{
+      color: var(--semi-color-primary);
+    }
+  }
+  .semi-tabs-tab-single.semi-tabs-tab-active{
+    color: var(--semi-color-primary);
+  }
+}
+
+.form-main{
+  padding: 20px;
+}
+.form-item{
+  display: flex;
+  flex-direction: column;
+  .semi-select{
+    width: 100%;
+    background-color: transparent;
+    border: 1px solid var(--semi-color-text-0);
+  }
+  .semi-input-wrapper{
+    background-color: transparent;
+    border: 1px solid var(--semi-color-text-0);
+  }
+}
+
+.btn {
+  align-self: flex-end;
+  margin: 20px;
+}
