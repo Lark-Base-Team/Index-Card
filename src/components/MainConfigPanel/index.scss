@@ -4,17 +4,24 @@
   flex: none;
   display: flex;
   justify-content: flex-start;
-  gap: 20px;
   flex-direction: column;
-  border-left: var(--ccm-chart-N300) 1px solid;
   box-sizing: border-box;
-  background: var(--ccm-chart-N00);
+  padding-bottom: 20px;
 }
 
 .form {
   flex-grow: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.semi-tabs {
+  height: calc(100% - 20px);
+  display: flex;
+  flex-direction: column;
 }
 .semi-tabs-bar{
+  height: 53px;
   padding: 0 80px;
   display: flex;
   align-items: center;
@@ -30,11 +37,35 @@
   }
   .semi-tabs-tab-single.semi-tabs-tab-active{
     color: var(--semi-color-primary);
+    font-weight: bold;
   }
 }
-
+.semi-tabs-content{
+  flex-grow: 1;
+  overflow-y: auto;
+}
 .form-main{
-  padding: 20px;
+  padding: 15px 20px 0 20px;
+  
+}
+.form-title{
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 22px;
+  margin-top: 12px;
+  &:first-child{
+    margin-top: 0;
+  }
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.form-subTitle{
+  font-size: 12px;
+  line-height: 22px;
+  color: var(--ccm-chart-N500);
+  font-weight: 500;
+  margin-top: 8px;
 }
 .form-item{
   display: flex;
@@ -42,15 +73,19 @@
   .semi-select{
     width: 100%;
     background-color: transparent;
-    border: 1px solid var(--semi-color-text-0);
+    border: 1px solid var(--divider);
+    margin: 8px 0;
+    border-radius: 6px;
   }
   .semi-input-wrapper{
     background-color: transparent;
-    border: 1px solid var(--semi-color-text-0);
+    border: 1px solid var(--divider);
+    border-radius: 6px;
+    margin: 8px 0;
   }
 }
 
 .btn {
   align-self: flex-end;
-  margin: 20px;
+  margin: 0 20px;
 }

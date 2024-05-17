@@ -3,14 +3,16 @@ import { useState, useEffect } from 'react';
 import { useConfig } from '@/hooks';
 import { useTranslation } from 'react-i18next';
 import { TFunction } from 'i18next/typescript/t';
-import { Button, Input, Select } from '@douyinfe/semi-ui';
+import { Button, Input, Select, InputNumber } from '@douyinfe/semi-ui';
+import { IconPlus } from '@douyinfe/semi-icons';
 import { dashboard, DashboardState } from "@lark-base-open/js-sdk";
-import { Tabs, TabPane } from '@douyinfe/semi-ui';
+import { Tabs, TabPane, Divider } from '@douyinfe/semi-ui';
 import { ColorPicker } from '../ColorPicker';
+import type { ColorName } from '../ColorPicker';
 
 
 interface ICountDownConfig {
-  color: string;
+  color: ColorName;
   /** 毫秒级时间戳 */
   target: number;
   units: string[];
@@ -28,7 +30,7 @@ export default function MainContent() {
   // create时的默认配置
   const [config, setConfig] = useState<ICountDownConfig>({
     target: new Date().getTime(),
-    color: 'var(--ccm-chart-N700',
+    color: 'primary',
     units: defaultUnits,
     title: t('target.remain'),
     othersConfig: defaultOthersConfig
@@ -51,7 +53,7 @@ export default function MainContent() {
   useConfig(updateConfig)
 
 
-  const colorChange = (color: string) => {
+  const colorChange = (color: ColorName) => {
     setConfig({
       ...config,
       color,
@@ -68,10 +70,10 @@ export default function MainContent() {
   }
 
   return (
-    <div className='main-config-panel'>
+    <div className='main-config-panel left-border'>
       <div className='form'>
         <Tabs>
-          <TabPane className='tabs-pane' tab="类型与数据" itemKey="1">
+          <TabPane tab="类型与数据" itemKey="1">
             <div className="form-main">
               <div className="form-title">数据源</div>
               <div className='form-item'>
@@ -91,6 +93,7 @@ export default function MainContent() {
                   <Select.Option value="ued">设计</Select.Option>
                 </Select>
               </div>
+              <Divider style={{ borderColor: 'var(--divider)', marginTop: '12px' }} />
               <div className="form-title">日期筛选</div>
               <div className='form-item'>
                 <div className='form-subTitle'>依据</div>
@@ -120,7 +123,10 @@ export default function MainContent() {
                 </Select>
                 <Input value='数字' />
               </div>
-              <div className="form-title">环同比<Button>添加环同比</Button></div>
+              <Divider style={{ borderColor: 'var(--divider)', margin: '12px 0 20px 0' }} />
+              <div className="form-title">
+                <span>环同比</span>
+                <Button theme='borderless' icon={<IconPlus size='small' />} style={{ fontWeight: 'normal' }}>添加环同比</Button></div>
               <div className='form-item'>
                 <div className='form-subTitle'>描述</div>
                 <Input value='环比增长率' />
@@ -141,11 +147,11 @@ export default function MainContent() {
               </div>
             </div>
           </TabPane>
-          <TabPane className='tabs-pane' tab="自定义样式" itemKey="2">
+          <TabPane tab="自定义样式" itemKey="2">
             <div className="form-main">
               <div className="form-title">颜色</div>
-              <div className='form-item'>
-                <ColorPicker onChange={colorChange} value={config.color} />
+              <div className='form-item' style={{ margin: '6px 0 18px 0' }}>
+                <ColorPicker onChange={colorChange} name={config.color} />
               </div>
               <div className='form-title'>图标与样式</div>
               <div className='form-item'>
@@ -159,15 +165,18 @@ export default function MainContent() {
               <div className='form-title'>指标数据格式</div>
               <div className='form-item'>
                 <div className='form-subTitle'>小数位与格式</div>
-                <Select value='operate'>
-                  <Select.Option value="operate">运营</Select.Option>
-                  <Select.Option value="rd">开发</Select.Option>
-                  <Select.Option value="pm">产品</Select.Option>
-                  <Select.Option value="ued">设计</Select.Option>
-                </Select>
+                <div className='flex-between'>
+                  <InputNumber style={{ marginRight: '10px', flex: 1 }} />
+                  <Select value='operate' style={{ flex: 1 }}>
+                    <Select.Option value="operate">运营</Select.Option>
+                    <Select.Option value="rd">开发</Select.Option>
+                    <Select.Option value="pm">产品</Select.Option>
+                    <Select.Option value="ued">设计</Select.Option>
+                  </Select>
+                </div>
               </div>
-              <div>
-                <div className='form-item'>
+              <div className='flex-between'>
+                <div className='form-item' style={{ marginRight: '10px' }}>
                   <div className='form-subTitle'>前缀</div>
                   <Input value='operate' />
                 </div>

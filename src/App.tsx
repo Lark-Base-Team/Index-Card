@@ -1,4 +1,4 @@
-import './App.css';
+import './App.scss';
 import { dashboard, DashboardState } from "@lark-base-open/js-sdk";
 import './locales/i18n';
 import 'dayjs/locale/zh-cn';
@@ -18,7 +18,7 @@ export default function App() {
 
     return (
         <main className={classnames({
-            'main-top-border': isConfig,
+            'top-border': isConfig,
             'main': true,
         })}>
             <MainContent />

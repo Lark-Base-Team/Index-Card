@@ -11,7 +11,7 @@ export default function MainContent() {
         <div className='main-content-number'>$323</div>
         <div className='main-content-description'>
           <div className="description-text">环比增长率</div>
-          <div className="description-index">
+          <div className="description-index green">
             <IconTriangleUp style={{ fontSize: iconSize }} />
             {/* <IconTriangleDown /> */}
             <div className='description-index-number'>31%</div>
@@ -19,7 +19,7 @@ export default function MainContent() {
         </div>
         <div className='main-content-description'>
           <div className="description-text">环比增长值</div>
-          <div className="description-index">
+          <div className="description-index black">
             {/* <IconArrowUpRight style={{ fontSize: iconSize }} /> */}
             <IconMinus style={{ fontSize: iconSize }} />
             {/* <IconArrowDownRight /> */}
@@ -28,7 +28,7 @@ export default function MainContent() {
         </div>
         <div className='main-content-description'>
           <div className="description-text">环比增长值</div>
-          <div className="description-index">
+          <div className="description-index red">
             <IconFilledArrowUp style={{ fontSize: iconSize }} />
             {/* <IconFilledArrowDown /> */}
             <div className='description-index-number'>24</div>
