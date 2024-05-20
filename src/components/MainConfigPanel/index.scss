@@ -85,6 +85,35 @@
   }
 }
 
+.index-icon{
+  display: flex;
+  align-items: center;
+  .index-icon-item{
+    display: flex;
+    align-items: center;
+    border-radius: 100px;
+    height: 20px;
+    padding: 0 8px;
+    margin: 0 5px;
+    font-size: 14px;
+    &.black{
+      background: rgba(0, 0, 0, 0.1);
+      color: rgba(0, 0, 0, 1);
+    }
+    &.green{
+      background: rgba(32, 136, 67, 0.1);
+      color: rgba(32, 136, 67, 1);
+    }
+    &.red{
+      background: rgba(220, 4, 59, 0.1);
+      color: rgba(220, 4, 59, 1);
+    }
+    .number{
+      margin-left: 5px;
+    }
+  }
+}
+
 .btn {
   align-self: flex-end;
   margin: 0 20px;

@@ -1,6 +1,5 @@
 import { DashboardState, bitable, dashboard } from "@lark-base-open/js-sdk";
-import React from "react";
-import { useLayoutEffect } from "react";
+import { useLayoutEffect, useEffect } from "react";
 
 function updateTheme(theme: string) {
   document.body.setAttribute('theme-mode', theme);
@@ -19,11 +18,13 @@ export function useTheme() {
   }, [])
 }
 
+
+
 /** 初始化、更新config */
 export function useConfig(updateConfig: (data: any) => void) {
 
   const isCreate = dashboard.state === DashboardState.Create
-  React.useEffect(() => {
+  useEffect(() => {
     if (isCreate) {
       return
     }
@@ -32,7 +33,7 @@ export function useConfig(updateConfig: (data: any) => void) {
   }, []);
 
 
-  React.useEffect(() => {
+  useEffect(() => {
     const offConfigChange = dashboard.onConfigChange((r) => {
       // 监听配置变化，协同修改配置
       updateConfig(r.data);

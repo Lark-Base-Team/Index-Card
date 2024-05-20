@@ -7,6 +7,8 @@ import { useTheme } from './hooks';
 import classnames from 'classnames'
 import MainContent from './components/MainContent';
 import MainConfigPanel from './components/MainConfigPanel';
+import { useState } from 'react';
+import type { IContentData } from '@/common/type';
 
 export default function App() {
     useTheme();
@@ -16,14 +18,40 @@ export default function App() {
     /** 是否配置/创建模式下 */
     const isConfig = dashboard.state === DashboardState.Config || isCreate;
 
+    const [contentData, setContentData] = useState<IContentData>({
+        number: '123', // 指标数据
+        prefix: '$', // 前缀 
+        suffix: '', // 前缀
+        momYoyList: [
+            {
+                desc: '环比增长率',
+                value: '10%',
+                color: 'green',
+                icon: 'IconTriangleUp',
+            },
+            {
+                desc: '环比增长率',
+                value: '-10%',
+                color: 'red',
+                icon: 'IconTriangleDown',
+            },
+            {
+                desc: '周同比增长值',
+                value: '0',
+                color: 'black',
+                icon: 'IconMinus',
+            }
+        ], // 同比、环比
+    });
+
     return (
         <main className={classnames({
             'top-border': isConfig,
             'main': true,
         })}>
-            <MainContent />
+            <MainContent isConfig={isConfig} contentData={contentData} />
             {
-                isConfig && <MainConfigPanel />
+                isConfig && <MainConfigPanel setContentData={setContentData} />
             }
         </main>
     )

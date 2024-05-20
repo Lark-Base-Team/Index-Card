@@ -1,39 +1,36 @@
 import './index.scss'
 import { IconMinus, IconTriangleUp, IconTriangleDown, IconFilledArrowUp, IconFilledArrowDown, IconArrowUpRight, IconArrowDownRight } from '@douyinfe/semi-icons';
+import classnames from 'classnames';
+import type { IContentData } from '@/common/type'
+import { getIcon } from '@/utils';
 
-const iconSize = '3.5vmin'
 
-export default function MainContent() {
+export default function MainContent({ isConfig, contentData }: { isConfig: boolean, contentData: IContentData }) {
+  const iconSize = isConfig ? '20px' : '10px'
 
   return (
     <div className='main-content'>
-      <div className="main-content-warp">
-        <div className='main-content-number'>$323</div>
-        <div className='main-content-description'>
-          <div className="description-text">环比增长率</div>
-          <div className="description-index green">
-            <IconTriangleUp style={{ fontSize: iconSize }} />
-            {/* <IconTriangleDown /> */}
-            <div className='description-index-number'>31%</div>
-          </div>
+      <div className={classnames({
+        'main-content-warp': true,
+        'is-config': isConfig,
+      })}>
+        <div className='main-content-number'>
+          <span>{contentData.prefix}</span>
+          <span>{contentData.number}</span>
+          <span>{contentData.suffix}</span>
         </div>
-        <div className='main-content-description'>
-          <div className="description-text">环比增长值</div>
-          <div className="description-index black">
-            {/* <IconArrowUpRight style={{ fontSize: iconSize }} /> */}
-            <IconMinus style={{ fontSize: iconSize }} />
-            {/* <IconArrowDownRight /> */}
-            <div className='description-index-number'>0</div>
-          </div>
-        </div>
-        <div className='main-content-description'>
-          <div className="description-text">环比增长值</div>
-          <div className="description-index red">
-            <IconFilledArrowUp style={{ fontSize: iconSize }} />
-            {/* <IconFilledArrowDown /> */}
-            <div className='description-index-number'>24</div>
-          </div>
-        </div>
+        {
+          contentData.momYoyList.map((item, index) => (
+            <div className='main-content-description' key={index}>
+              <div className="description-text">{item.desc}</div>
+              <div className={classnames('description-index', item.color)}>
+                {getIcon(item.icon, iconSize)}
+                {/* <IconTriangleDown /> */}
+                <div className='description-index-number'>{item.value}</div>
+              </div>
+            </div>
+          ))
+        }
       </div>
     </div>
   )
