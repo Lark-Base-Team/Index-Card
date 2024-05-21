@@ -38,6 +38,9 @@
       line-height: var(--line-height);
       font-weight: 500;
       margin-bottom: var(--description-margin-bottom);
+      .description-text{
+        color: var(--ccm-chart-N1000);
+      }
       .description-index{
         display: flex;
         align-items: center;

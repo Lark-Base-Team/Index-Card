@@ -68,20 +68,32 @@
   margin-top: 8px;
 }
 .form-item{
+  position: relative;
   display: flex;
   flex-direction: column;
+  .icon-delete{
+    position: absolute;
+    right: 10px; 
+    top: 10px;
+    cursor: pointer;
+    color: var(--ccm-chart-N1000);
+  }
   .semi-select{
     width: 100%;
     background-color: transparent;
     border: 1px solid var(--divider);
     margin: 8px 0;
     border-radius: 6px;
+    .semi-select-selection-text{
+      color: var(--ccm-chart-N1000);
+    }
   }
   .semi-input-wrapper{
     background-color: transparent;
     border: 1px solid var(--divider);
     border-radius: 6px;
     margin: 8px 0;
+    color: var(--ccm-chart-N1000);
   }
 }
 
@@ -112,6 +124,13 @@
       margin-left: 5px;
     }
   }
+}
+
+.bg-grey{
+  margin-top: 20px;
+  background-color: var(--ccm-chart-N50);
+  padding: 4px 8px 12px 8px;
+  border-radius: 8px;
 }
 
 .btn {

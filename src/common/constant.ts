@@ -1,159 +1,160 @@
 import { IconMinus, IconTriangleUp, IconTriangleDown, IconFilledArrowUp, IconFilledArrowDown, IconArrowUpRight, IconArrowDownRight } from '@douyinfe/semi-icons';
 import { FieldType } from "@lark-base-open/js-sdk";
+import { t } from 'i18next';
 
 export const dateTypeList = [
   {
-    name: '日期',
+    name: t('date'),
     value: FieldType.DateTime,
   },
   {
-    name: '创建时间',
+    name: t('createDate'),
     value: FieldType.CreatedTime,
   },
   {
-    name: '更新时间',
+    name: t('ModifyDate'),
     value: FieldType.ModifiedTime,
   },
 ] as const;
 
 export const dateRangeList = [
   {
-    name: '今天',
+    name: t('today'),
     value: 'Today',
   },
   {
-    name: '昨天',
+    name: t('yesterday'),
     value: 'Yesterday',
   },
   {
-    name: '本周',
+    name: t('currentWeek'),
     value: 'CurrentWeek',
   },
   {
-    name: '上周',
+    name: t('lastWeek'),
     value: 'LastWeek',
   },
   {
-    name: '本月',
+    name: t('currentMonth'),
     value: 'CurrentMonth',
   },
   {
-    name: '上月',
+    name: t('lastMonth'),
     value: 'LastMonth',
   },
   {
-    name: '本季度',
+    name: t('currentQuarter'),
     value: 'CurrentQuarter',
   },
   {
-    name: '上季度',
+    name: t('lastQuarter'),
     value: 'LastQuarter',
   },
   {
-    name: '今年',
+    name: t('currentYear'),
     value: 'CurrentYear',
   },
   {
-    name: '去年',
+    name: t('lastYear'),
     value: 'LastYear',
   },
   {
-    name: '最近7天',
+    name: t('last7Days'),
     value: 'Last7Days',
   },
   {
-    name: '最近14天',
+    name: t('last14Days'),
     value: 'Last14Days',
   },
   {
-    name: '最近30天',
+    name: t('last30Days'),
     value: 'Last30Days',
   },
   {
-    name: '最近365天',
+    name: t('last365Days'),
     value: 'Last365Days',
   },
   {
-    name: '最近3个月',
+    name: t('last3Months'),
     value: 'Last3Months',
   },
   {
-    name: '最近6个月',
+    name: t('last6Months'),
     value: 'Last6Months',
   },
 ] as const;
 
 export const statisticalTypeList = [
   {
-    name: '统计记录总数',
+    name: t('recordsTotal'),
     value: 'total',
   },
   {
-    name: '统计记录数值',
+    name: t('fieldValue'),
     value: 'number',
   },
 ] as const;
 
 export const statisticalByNumberList = [
   {
-    name: '数字',
+    name: t('number'),
     value: 'number',
   },
   {
-    name: '货币',
+    name: t('currency'),
     value: 'currency',
   },
 ] as const;
 
 export const calculationList = [
   {
-    name: '求和',
+    name: t('sum'),
     value: 'SUM',
   },
   {
-    name: '平均值',
+    name: t('average'),
     value: 'AVERAGE',
   },
   {
-    name: '最大值',
+    name: t('max'),
     value: 'MAX',
   },
   {
-    name: '最小值',
+    name: t('min'),
     value: 'MIN',
   }
 ] as const;
 
 export const momOrYoyCalcMethodList = [
   {
-    name: '环比',
+    name: t('mom'),
     value: 'mom',
   },
   {
-    name: '周同比',
+    name: t('weekYoy'),
     value: 'yoyByWeek',
   },
   {
-    name: '月同比',
+    name: t('monthYoy'),
     value: 'yoyByMonth',
   },
   {
-    name: '年同比',
+    name: t('yearYoy'),
     value: 'yoyByYear',
   },
 ] as const;
 
 export const momOrYoyCalcTypeList = [
   {
-    name: '差异率',
+    name: t('differenceRate'),
     value: 'differenceRate',
   },
   {
-    name: '差异率',
+    name: t('differenceValue'),
     value: 'differenceValue',
   },
   {
-    name: '原始值',
+    name: t('originalValue'),
     value: 'originalValue',
   }
 ] as const;
@@ -227,19 +228,19 @@ export const icons = {
 
 export const dataFormatList = [
   {
-    name: '数字（千分位）',
+    name: t('numberMillennials'),
     value: 'numberMillennials',
   },
   {
-    name: '数字',
+    name: t('number'),
     value: 'number',
   },
   {
-    name: '百分比',
+    name: t('percentage'),
     value: 'percentage',
   },
   {
-    name: '千分位比',
+    name: t('millageRate'),
     value: 'millageRate',
   },
 ] as const;

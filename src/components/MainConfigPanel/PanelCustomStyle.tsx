@@ -11,7 +11,7 @@ import { getIcon } from '@/utils';
 
 export default function PanelCustomStyle({ config, setConfig }: { config: IConfig; setConfig: (data: IConfig) => void }) {
 
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
 
   const colorChange = (color: ColorName) => {
     setConfig({
@@ -20,15 +20,54 @@ export default function PanelCustomStyle({ config, setConfig }: { config: IConfi
     })
   }
 
+  const iconStyleChange = (iconStyle: any) => {
+    setConfig({
+      ...config,
+      iconStyle,
+    })
+  }
+
+  const formatterToNumber = (value: any) => {
+    return `${value}`.replace(/\D/g, '')
+  }
+
+  const decimalChange = (decimal: any) => {
+    setConfig({
+      ...config,
+      decimal,
+    })
+  }
+
+  const numberFormatChange = (numberFormat: any) => {
+    setConfig({
+      ...config,
+      numberFormat,
+    })
+  }
+
+  const prefixChange = (prefix: any) => {
+    setConfig({
+      ...config,
+      prefix,
+    })
+  }
+
+  const suffixChange = (suffix: any) => {
+    setConfig({
+      ...config,
+      suffix,
+    })
+  }
+
   return (
     <div className="form-main">
-      <div className="form-title">颜色</div>
+      <div className="form-title">{t('color')}</div>
       <div className='form-item' style={{ margin: '6px 0 18px 0' }}>
         <ColorPicker onChange={colorChange} name={config.color} />
       </div>
-      <div className='form-title'>图标样式</div>
+      <div className='form-title'>{t('iconStyle')}</div>
       <div className='form-item'>
-        <Select value={config.iconStyle}>
+        <Select value={config.iconStyle} onChange={iconStyleChange}>
           {iconStyleList.map((item) =>
           (<Select.Option value={item.id} key={item.id}>
             <div className='index-icon'>
@@ -49,12 +88,19 @@ export default function PanelCustomStyle({ config, setConfig }: { config: IConfi
           }
         </Select>
       </div>
-      <div className='form-title'>指标数据格式</div>
+      <div className='form-title'>{t('indexDataFormat')}</div>
       <div className='form-item'>
-        <div className='form-subTitle'>小数位与格式</div>
+        <div className='form-subTitle'>{t('decimalPlaces_Format')}</div>
         <div className='flex-between'>
-          <InputNumber style={{ marginRight: '10px', flex: 1 }} value={config.decimal} />
-          <Select value={config.numberFormat} style={{ flex: 1 }}>
+          <InputNumber
+            style={{ marginRight: '10px', flex: 1 }}
+            value={config.decimal}
+            formatter={formatterToNumber}
+            onNumberChange={number => decimalChange(number)}
+            min={0}
+            max={Number.MAX_SAFE_INTEGER}
+          />
+          <Select value={config.numberFormat} style={{ flex: 1 }} onChange={numberFormatChange}>
             {dataFormatList.map((item) =>
               (<Select.Option value={item.value} key={item.value}>{item.name}</Select.Option>))
             }
@@ -63,12 +109,12 @@ export default function PanelCustomStyle({ config, setConfig }: { config: IConfi
       </div>
       <div className='flex-between'>
         <div className='form-item' style={{ marginRight: '10px' }}>
-          <div className='form-subTitle'>前缀</div>
-          <Input value={config.prefix} placeholder='请输入前缀' />
+          <div className='form-subTitle'>{t('prefix')}</div>
+          <Input value={config.prefix} placeholder={t('prefixPlaceholder')} onChange={prefixChange} />
         </div>
         <div className='form-item'>
-          <div className='form-subTitle'>后缀</div>
-          <Input value={config.suffix} placeholder='请输入前缀' />
+          <div className='form-subTitle'>{t('suffix')}</div>
+          <Input value={config.suffix} placeholder={t('suffixPlaceholder')} onChange={suffixChange} />
         </div>
       </div>
     </div>

@@ -19,6 +19,7 @@ export default function App() {
     const isConfig = dashboard.state === DashboardState.Config || isCreate;
 
     const [contentData, setContentData] = useState<IContentData>({
+        color: 'primary', // 指标颜色
         number: '123', // 指标数据
         prefix: '$', // 前缀 
         suffix: '', // 前缀
