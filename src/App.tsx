@@ -9,6 +9,7 @@ import MainContent from './components/MainContent';
 import MainConfigPanel from './components/MainConfigPanel';
 import { useState } from 'react';
 import type { IContentData } from '@/common/type';
+import { useEffect } from 'react';
 
 export default function App() {
     useTheme();
@@ -44,6 +45,19 @@ export default function App() {
             }
         ], // 同比、环比
     });
+
+    // 展示态
+    useEffect(() => {
+        if (dashboard.state === DashboardState.View) {
+            dashboard.getData().then(data => {
+                // console.log(data, '<<<<<<<<111');
+            });
+
+            dashboard.onDataChange((data) => {
+                // console.log(data, '<<<<<<<<222');
+            })
+        }
+    }, [])
 
     return (
         <main className={classnames({

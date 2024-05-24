@@ -98,11 +98,11 @@ export default function PanelCustomStyle({ config, setConfig }: { config: IConfi
             formatter={formatterToNumber}
             onNumberChange={number => decimalChange(number)}
             min={0}
-            max={Number.MAX_SAFE_INTEGER}
+            max={5}
           />
           <Select value={config.numberFormat} style={{ flex: 1 }} onChange={numberFormatChange}>
             {dataFormatList.map((item) =>
-              (<Select.Option value={item.value} key={item.value}>{item.name}</Select.Option>))
+              (<Select.Option value={item.value} key={item.value}>{item.label}</Select.Option>))
             }
           </Select>
         </div>

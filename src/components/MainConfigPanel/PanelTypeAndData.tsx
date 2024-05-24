@@ -3,83 +3,83 @@ import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Input, Select } from '@douyinfe/semi-ui';
 import { IconPlus, IconDelete } from '@douyinfe/semi-icons';
-import { dashboard, DashboardState, base } from "@lark-base-open/js-sdk";
-import type { IView } from '@lark-base-open/js-sdk';
+import { SourceType } from "@lark-base-open/js-sdk";
+import type { IView, IDataRange, ViewDataRange, ICategory } from '@lark-base-open/js-sdk';
 import { Divider } from '@douyinfe/semi-ui';
-import { IConfig, IViewItem, ITableItem, MomOrYoy } from '@/common/type';
-import { calculationList, dateRangeList, dateTypeList, momOrYoyCalcMethodList, momOrYoyCalcTypeList, statisticalByNumberList, statisticalTypeList } from '@/common/constant';
+import { IConfig, ITableItem, MomOrYoy } from '@/common/type';
+import { calculationList, dateRangeList, momOrYoyCalcTypeList, statisticalTypeList } from '@/common/constant';
+import { getNewMomOrYoyCalcMethodList } from '@/utils';
+
+type Mutable<T> = {
+  -readonly [P in keyof T]: T[P];
+};
 
 interface IProps {
   config: IConfig;
-  setConfig: (data: IConfig) => void
+  setConfig: (data: IConfig) => void;
+  tableList: ITableItem[];
+  tableRangeList: IDataRange[];
+  getTableRange: (tableId: string) => Promise<IDataRange[]>;
+  setTableRangeList: (data: IDataRange[]) => void;
+  dateTypeList: ICategory[];
+  setDateTypeList: (data: ICategory[]) => void;
+  getCategories: (tableId: string) => Promise<{ dateTypeList: ICategory[]; numberOrCurrencyList: ICategory[]; }>;
+  numberOrCurrencyList: ICategory[];
+  setNumberOrCurrencyList: (data: ICategory[]) => void;
 }
 
-export default function PanelTypeAndData({ config, setConfig }: IProps) {
+export default function PanelTypeAndData({ config, setConfig, tableList, tableRangeList, getTableRange, setTableRangeList, dateTypeList, setDateTypeList, getCategories, numberOrCurrencyList, setNumberOrCurrencyList }: IProps) {
   const { t } = useTranslation();
-  const [tableList, setTableList] = useState<ITableItem[]>([]);
-  const [tableViewList, setTableViewList] = useState<IViewItem[]>([{ name: t('allData'), id: 'all' }]);
 
-
-
-  const getTableList = async () => {
-    if (dashboard.state === DashboardState.Config) {
-      const baseTableList = await base.getTableList()
-      const resultList: ITableItem[] = []
-
-      for (const item of baseTableList) {
-        const name = await item.getName();
-        const viewList = await item.getViewList();
-        resultList.push({ id: item.id, name, viewList });
-      }
-
-      return resultList;
-    }
-    return [];
-  }
-
-  const getTableViewList = async (viewListSource: IView[] | undefined) => {
-    const resultList: IViewItem[] = [{ name: t('allData'), id: 'all' }];
-    if (!viewListSource) {
-      return resultList;
-    }
-    for (const item of viewListSource) {
-      const name = await item.getName();
-      resultList.push({ name, id: item.id });
-    }
-
-    return resultList;
-  }
+  const defaultViewId = config.tableRange.type === SourceType.ALL ? 'ALL' : config.tableRange.viewId;
+  const [tableRangeViewId, setTableRangeViewId] = useState<string>(defaultViewId);
+  const [newMomOrYoyCalcMethodList, setNewMomOrYoyCalcMethodList] = useState(getNewMomOrYoyCalcMethodList(config.dateRange))
 
   const tableChange = async (tableId: any) => {
     setConfig({
       ...config,
       tableId,
-      tableViewId: 'all',
+      tableRange: { type: SourceType.ALL },
     })
-    const viewListSource = tableList.find(item => item.id === tableId)?.viewList;
-    const tableViewList = await getTableViewList(viewListSource)
-    setTableViewList(tableViewList)
+    const rangeList = await getTableRange(tableId)
+    setTableRangeList(rangeList)
+    const { dateTypeList, numberOrCurrencyList } = await getCategories(tableId);
+    setDateTypeList(dateTypeList);
+    setNumberOrCurrencyList(numberOrCurrencyList);
   }
 
-  const tableViewChange = async (tableViewId: any) => {
+  const tableRangeChange = async (tableRangeViewId: any) => {
+    setTableRangeViewId(tableRangeViewId);
+    let tableRange: IDataRange;
+    if (tableRangeViewId === 'ALL') {
+      tableRange = { type: SourceType.ALL };
+    } else {
+      tableRange = tableRangeList.find((item) => (item as ViewDataRange).viewId === tableRangeViewId) as IDataRange;
+
+    }
     setConfig({
       ...config,
-      tableViewId,
+      tableRange,
     })
   }
 
-  const dateTypeChange = (dateType: any) => {
+  const dateTypeChange = (dateTypeFieldId: any) => {
     setConfig({
       ...config,
-      dateType,
+      dateTypeFieldId,
     })
   }
 
   const dateRangeChange = (dateRange: any) => {
+    setNewMomOrYoyCalcMethodList(getNewMomOrYoyCalcMethodList(dateRange));
     setConfig({
       ...config,
       dateRange,
-    })
+      momOrYoy: config.momOrYoy.map((item) => {
+        item.momOrYoyCalcMethod = 'mom'
+        return item;
+      })
+    });
   }
 
   const statisticalTypeChange = (statisticalType: any) => {
@@ -96,10 +96,10 @@ export default function PanelTypeAndData({ config, setConfig }: IProps) {
     })
   }
 
-  const statisticalByNumberChange = (statisticalByNumber: any) => {
+  const numberOrCurrencyFieldIdChange = (numberOrCurrencyFieldId: any) => {
     setConfig({
       ...config,
-      statisticalByNumber,
+      numberOrCurrencyFieldId,
     })
   }
 
@@ -140,17 +140,8 @@ export default function PanelTypeAndData({ config, setConfig }: IProps) {
     setConfig({ ...config })
   }
 
-
-  const initData = async () => {
-    const tableList = await getTableList();
-    const viewListSource = tableList.find(item => item.id === config.tableId)?.viewList;
-    const tableViewList = await getTableViewList(viewListSource)
-    setTableList(tableList)
-    setTableViewList(tableViewList)
-  }
-
   useEffect(() => {
-    initData();
+    console.log('aaa');
   })
 
   return (
@@ -159,15 +150,22 @@ export default function PanelTypeAndData({ config, setConfig }: IProps) {
       <div className='form-item'>
         <Select value={config.tableId} onChange={tableChange}>
           {tableList.map((item) =>
-            (<Select.Option value={item.id} key={item.id}>{item.name}</Select.Option>))
+            (<Select.Option value={item.id} key={item.id}>{item.label}</Select.Option>))
           }
         </Select>
       </div>
       <div className="form-title">{t('dataRange')}</div>
       <div className='form-item'>
-        <Select value={config.tableViewId} onChange={tableViewChange}>
-          {tableViewList.map((item) =>
-            (<Select.Option value={item.id} key={item.id}>{item.name}</Select.Option>))
+        <Select value={tableRangeViewId} onChange={tableRangeChange}>
+          {
+            tableRangeList.map(item => {
+              let newItem = { ...item } as ViewDataRange;
+              if (item.type === SourceType.ALL) {
+                newItem.viewName = t('allData');
+                newItem.viewId = 'ALL';
+              }
+              return newItem
+            }).map(item => (<Select.Option value={item.viewId} key={item.viewId}>{item.viewName}</Select.Option>))
           }
         </Select>
       </div>
@@ -175,16 +173,16 @@ export default function PanelTypeAndData({ config, setConfig }: IProps) {
       <div className="form-title">{t('dateFiltering')}</div>
       <div className='form-item'>
         <div className='form-subTitle'>{t('basis')}</div>
-        <Select value={config.dateType} onChange={dateTypeChange}>
+        <Select value={config.dateTypeFieldId} onChange={dateTypeChange}>
           {dateTypeList.map((item) =>
-            (<Select.Option value={item.value} key={item.value}>{item.name}</Select.Option>))
+            (<Select.Option value={item.fieldId} key={item.fieldId}>{item.fieldName}</Select.Option>))
           }
         </Select>
         <div className='form-item'>
           <div className='form-subTitle'>{t('range')}</div>
           <Select value={config.dateRange} onChange={dateRangeChange}>
             {dateRangeList.map((item) =>
-              (<Select.Option value={item.value} key={item.value}>{item.name}</Select.Option>))
+              (<Select.Option value={item.value} key={item.value}>{item.label}</Select.Option>))
             }
           </Select>
         </div>
@@ -193,28 +191,33 @@ export default function PanelTypeAndData({ config, setConfig }: IProps) {
       <div className='form-item'>
         <Select value={config.statisticalType} onChange={statisticalTypeChange}>
           {statisticalTypeList.map((item) =>
-            (<Select.Option value={item.value} key={item.value}>{item.name}</Select.Option>))
+            (<Select.Option value={item.value} key={item.value}>{item.label}</Select.Option>))
           }
         </Select>
       </div>
-      <div className='form-item'>
-        <Select value={config.statisticalCalcType} onChange={statisticalCalcTypeChange}>
-          {calculationList.map((item) =>
-            (<Select.Option value={item.value} key={item.value}>{item.name}</Select.Option>))
-          }
-        </Select>
-      </div>
-      <div className='form-item'>
-        <Select value={config.statisticalByNumber} onChange={statisticalByNumberChange}>
-          {statisticalByNumberList.map((item) =>
-            (<Select.Option value={item.value} key={item.value}>{item.name}</Select.Option>))
-          }
-        </Select>
-      </div>
+      {config.statisticalType === 'number' && (
+        <>
+          <div className='form-item'>
+            <Select value={config.numberOrCurrencyFieldId} onChange={numberOrCurrencyFieldIdChange}>
+              {numberOrCurrencyList.map((item) =>
+                (<Select.Option value={item.fieldId} key={item.fieldId}>{item.fieldName}</Select.Option>))
+              }
+            </Select>
+          </div>
+          <div className='form-item'>
+            <Select value={config.statisticalCalcType} onChange={statisticalCalcTypeChange}>
+              {calculationList.map((item) =>
+                (<Select.Option value={item.value} key={item.value}>{item.label}</Select.Option>))
+              }
+            </Select>
+          </div>
+        </>
+      )}
       <Divider style={{ borderColor: 'var(--divider)', margin: '12px 0 20px 0' }} />
       <div className="form-title">
         <span>{t('mom_yoy')}</span>
         <Button
+          disabled={config.momOrYoy.length >= 6}
           theme='borderless'
           icon={<IconPlus size='small' />}
           style={{ fontWeight: 'normal' }}
@@ -225,21 +228,23 @@ export default function PanelTypeAndData({ config, setConfig }: IProps) {
       {
         config.momOrYoy && config.momOrYoy.map((item, index) => (
           <div className='form-item bg-grey' key={index}>
-            <div className='icon-delete' onClick={() => { deleteMomOrYoyItem(index) }}>
-              <IconDelete size='small' />
-            </div>
+            {config.momOrYoy.length > 1 && (
+              <div className='icon-delete' onClick={() => { deleteMomOrYoyItem(index) }}>
+                <IconDelete size='small' />
+              </div>
+            )}
             <div className='form-subTitle'>{t('description')}</div>
             <Input value={item.momOrYoyDesc} onChange={(momOrYoyDesc) => { momOrYoyDescChange(item, momOrYoyDesc, index) }} />
             <div className='form-subTitle'>{t('calculation')}</div>
-            <Select value={item.momOrYoyCalcMethod} onChange={(momOrYoyCalcMethod) => momOrYoyCalcMethodChange(item, momOrYoyCalcMethod, index)}>
-              {momOrYoyCalcMethodList.map((item) =>
-                (<Select.Option value={item.value} key={item.value}>{item.name}</Select.Option>))
-              }
+            <Select
+              optionList={newMomOrYoyCalcMethodList as Mutable<typeof newMomOrYoyCalcMethodList>}
+              value={item.momOrYoyCalcMethod}
+              onChange={(momOrYoyCalcMethod) => momOrYoyCalcMethodChange(item, momOrYoyCalcMethod, index)}>
             </Select>
             <div className='form-subTitle'>{t('calculationType')}</div>
             <Select value={item.momOrYoyCalcType} onChange={(momOrYoyCalcType) => { momOrYoyCalcTypeChange(item, momOrYoyCalcType, index) }}>
               {momOrYoyCalcTypeList.map((item) =>
-                (<Select.Option value={item.value} key={item.value}>{item.name}</Select.Option>))
+                (<Select.Option value={item.value} key={item.value}>{item.label}</Select.Option>))
               }
             </Select>
             <div ref={scrollToBottomRef}></div>

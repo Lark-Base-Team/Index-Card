@@ -130,7 +130,16 @@
   margin-top: 20px;
   background-color: var(--ccm-chart-N50);
   padding: 4px 8px 12px 8px;
-  border-radius: 8px;
+  border-radius: 8px;.semi-select{
+    background-color: #fff;
+    .semi-select-selection-text{
+      color: #000;
+    }
+  }
+  .semi-input-wrapper{
+    background-color: #fff;
+    color: #000;
+  }
 }
 
 .btn {

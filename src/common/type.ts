@@ -1,7 +1,7 @@
 import { FieldType } from "@lark-base-open/js-sdk";
-import type { IView } from '@lark-base-open/js-sdk';
+import type { IDataRange, Rollup, FilterDuration } from '@lark-base-open/js-sdk';
 import type { ColorName } from '@/components/ColorPicker';
-import { dateRangeList, statisticalTypeList, statisticalByNumberList, calculationList, momOrYoyCalcMethodList, momOrYoyCalcTypeList, iconStyleList, dataFormatList, icons } from '@/common/constant';
+import { statisticalTypeList, momOrYoyCalcMethodList, momOrYoyCalcTypeList, iconStyleList, dataFormatList, icons } from '@/common/constant';
 
 export interface IMomYoyList {
   desc: string;
@@ -19,10 +19,7 @@ export interface IContentData {
 }
 
 export type DateType = FieldType.DateTime | FieldType.CreatedTime | FieldType.ModifiedTime;
-export type DateRange = typeof dateRangeList[number]['value'];
 export type StatisticalType = typeof statisticalTypeList[number]['value'];
-export type StatisticalByNumber = typeof statisticalByNumberList[number]['value'];
-export type StatisticalCalcType = typeof calculationList[number]['value'];
 export type MomOrYoyCalcMethod = typeof momOrYoyCalcMethodList[number]['value'];
 export type MomOrYoyCalcType = typeof momOrYoyCalcTypeList[number]['value'];
 export type IconStyle = typeof iconStyleList[number]['id'];
@@ -32,14 +29,32 @@ export type MomOrYoy = {
   momOrYoyCalcMethod: MomOrYoyCalcMethod; // 环比/同比计算方式
   momOrYoyCalcType: MomOrYoyCalcType; // 环比/同比计算类型
 };
+export enum MyFilterDuration {
+  /** 本季度 */
+  CurrentQuarter = 'CurrentQuarter',
+  /** 上季度 */
+  LastQuarter = 'LastQuarter',
+  /** 今年 */
+  CurrentYear = 'CurrentYear',
+  /** 去年 */
+  LastYear = 'LastYear',
+  /** 最近14天 */
+  Last14Days = 'Last14Days',
+  /** 最近365天 */
+  Last365Days = 'Last365Days',
+  /** 最近3个月 */
+  Last3Months = 'Last3Months',
+  /** 最近6个月 */
+  Last6Months = 'Last6Months',
+}
 export interface IConfig {
   tableId: string; // 数据源
-  tableViewId: string; //数据范围
-  dateType: DateType; // 日期类型å
-  dateRange: DateRange; // 日期范围
+  tableRange: IDataRange; //数据范围
+  dateTypeFieldId: string; // 日期类型字段的Id
+  dateRange: FilterDuration; // 日期范围
   statisticalType: StatisticalType; // 统计方式
-  statisticalByNumber: StatisticalByNumber; // 统计数值字段类型
-  statisticalCalcType: StatisticalCalcType; // 统计计算类型
+  numberOrCurrencyFieldId: string; // 统计数值字段类型
+  statisticalCalcType: Rollup; // 统计计算类型
   momOrYoy: MomOrYoy[]; // 环同比
   color: ColorName; // 颜色
   iconStyle: IconStyle; // 图标样式
@@ -51,11 +66,5 @@ export interface IConfig {
 
 export interface ITableItem {
   id: string;
-  name: string;
-  viewList: IView[];
-}
-
-export interface IViewItem {
-  id: string;
-  name: string;
+  label: string;
 }

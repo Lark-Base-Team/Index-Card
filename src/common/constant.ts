@@ -1,160 +1,140 @@
 import { IconMinus, IconTriangleUp, IconTriangleDown, IconFilledArrowUp, IconFilledArrowDown, IconArrowUpRight, IconArrowDownRight } from '@douyinfe/semi-icons';
-import { FieldType } from "@lark-base-open/js-sdk";
+import { FilterDuration, SourceType, Rollup } from "@lark-base-open/js-sdk";
 import { t } from 'i18next';
-
-export const dateTypeList = [
-  {
-    name: t('date'),
-    value: FieldType.DateTime,
-  },
-  {
-    name: t('createDate'),
-    value: FieldType.CreatedTime,
-  },
-  {
-    name: t('ModifyDate'),
-    value: FieldType.ModifiedTime,
-  },
-] as const;
+import type { IConfig } from '@/common/type'
+// import { MyFilterDuration } from '@/common/type'
 
 export const dateRangeList = [
   {
-    name: t('today'),
-    value: 'Today',
+    label: t('today'),
+    value: FilterDuration.Today,
   },
   {
-    name: t('yesterday'),
-    value: 'Yesterday',
+    label: t('yesterday'),
+    value: FilterDuration.Yesterday,
   },
   {
-    name: t('currentWeek'),
-    value: 'CurrentWeek',
+    label: t('currentWeek'),
+    value: FilterDuration.CurrentWeek,
   },
   {
-    name: t('lastWeek'),
-    value: 'LastWeek',
+    label: t('lastWeek'),
+    value: FilterDuration.LastWeek,
   },
   {
-    name: t('currentMonth'),
-    value: 'CurrentMonth',
+    label: t('currentMonth'),
+    value: FilterDuration.CurrentMonth,
   },
   {
-    name: t('lastMonth'),
-    value: 'LastMonth',
+    label: t('lastMonth'),
+    value: FilterDuration.LastMonth,
   },
+  // {
+  //   label: t('currentQuarter'),
+  //   value: MyFilterDuration.CurrentQuarter,
+  // },
+  // {
+  //   label: t('lastQuarter'),
+  //   value: MyFilterDuration.LastQuarter,
+  // },
+  // {
+  //   label: t('currentYear'),
+  //   value: MyFilterDuration.CurrentYear,
+  // },
+  // {
+  //   label: t('lastYear'),
+  //   value: MyFilterDuration.LastYear,
+  // },
   {
-    name: t('currentQuarter'),
-    value: 'CurrentQuarter',
+    label: t('last7Days'),
+    value: FilterDuration.TheLastWeek,
   },
+  // {
+  //   label: t('last14Days'),
+  //   value: MyFilterDuration.Last14Days,
+  // },
   {
-    name: t('lastQuarter'),
-    value: 'LastQuarter',
+    label: t('last30Days'),
+    value: FilterDuration.TheLastMonth,
   },
-  {
-    name: t('currentYear'),
-    value: 'CurrentYear',
-  },
-  {
-    name: t('lastYear'),
-    value: 'LastYear',
-  },
-  {
-    name: t('last7Days'),
-    value: 'Last7Days',
-  },
-  {
-    name: t('last14Days'),
-    value: 'Last14Days',
-  },
-  {
-    name: t('last30Days'),
-    value: 'Last30Days',
-  },
-  {
-    name: t('last365Days'),
-    value: 'Last365Days',
-  },
-  {
-    name: t('last3Months'),
-    value: 'Last3Months',
-  },
-  {
-    name: t('last6Months'),
-    value: 'Last6Months',
-  },
+  // {
+  //   label: t('last365Days'),
+  //   value: MyFilterDuration.Last365Days,
+  // },
+  // {
+  //   label: t('last3Months'),
+  //   value: MyFilterDuration.Last3Months,
+  // },
+  // {
+  //   label: t('last6Months'),
+  //   value: MyFilterDuration.Last6Months,
+  // },
 ] as const;
 
 export const statisticalTypeList = [
   {
-    name: t('recordsTotal'),
+    label: t('recordsTotal'),
     value: 'total',
   },
   {
-    name: t('fieldValue'),
+    label: t('fieldValue'),
     value: 'number',
-  },
-] as const;
-
-export const statisticalByNumberList = [
-  {
-    name: t('number'),
-    value: 'number',
-  },
-  {
-    name: t('currency'),
-    value: 'currency',
   },
 ] as const;
 
 export const calculationList = [
   {
-    name: t('sum'),
+    label: t('sum'),
     value: 'SUM',
   },
   {
-    name: t('average'),
+    label: t('average'),
     value: 'AVERAGE',
   },
   {
-    name: t('max'),
+    label: t('max'),
     value: 'MAX',
   },
   {
-    name: t('min'),
+    label: t('min'),
     value: 'MIN',
   }
 ] as const;
 
 export const momOrYoyCalcMethodList = [
   {
-    name: t('mom'),
+    label: t('mom'),
     value: 'mom',
+    disabled: false,
   },
   {
-    name: t('weekYoy'),
+    label: t('weekYoy'),
     value: 'yoyByWeek',
+    disabled: false,
   },
   {
-    name: t('monthYoy'),
+    label: t('monthYoy'),
     value: 'yoyByMonth',
+    disabled: false,
   },
   {
-    name: t('yearYoy'),
+    label: t('yearYoy'),
     value: 'yoyByYear',
+    disabled: false,
   },
 ] as const;
 
 export const momOrYoyCalcTypeList = [
   {
-    name: t('differenceRate'),
+    label: t('differenceRate'),
     value: 'differenceRate',
   },
   {
-    name: t('differenceValue'),
+    label: t('differenceValue'),
     value: 'differenceValue',
   },
   {
-    name: t('originalValue'),
+    label: t('originalValue'),
     value: 'originalValue',
   }
 ] as const;
@@ -228,19 +208,42 @@ export const icons = {
 
 export const dataFormatList = [
   {
-    name: t('numberMillennials'),
+    label: t('numberMillennials'),
     value: 'numberMillennials',
   },
   {
-    name: t('number'),
+    label: t('number'),
     value: 'number',
   },
   {
-    name: t('percentage'),
+    label: t('percentage'),
     value: 'percentage',
   },
   {
-    name: t('millageRate'),
+    label: t('millageRate'),
     value: 'millageRate',
   },
 ] as const;
+
+export const defaultConfig: IConfig = {
+  tableId: '',
+  tableRange: { type: SourceType.ALL },
+  dateTypeFieldId: '',
+  dateRange: FilterDuration.Today,
+  statisticalType: 'total',
+  numberOrCurrencyFieldId: '',
+  statisticalCalcType: Rollup.SUM,
+  momOrYoy: [
+    {
+      momOrYoyDesc: t('momGrowthRate'),
+      momOrYoyCalcMethod: 'mom',
+      momOrYoyCalcType: 'differenceRate',
+    }
+  ],
+  color: 'primary',
+  iconStyle: '1',
+  decimal: 0,
+  numberFormat: 'number',
+  prefix: '$',
+  suffix: '',
+}

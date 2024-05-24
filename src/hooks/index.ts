@@ -32,19 +32,6 @@ const updateConfig = (config: IConfig, setConfig: (config: IConfig) => void) => 
 
 /** 初始化、更新config */
 export async function useConfig(setConfig: (config: IConfig) => void) {
-  const isCreate = dashboard.state === DashboardState.Create
-  useEffect(() => {
-    if (isCreate) {
-      return
-    }
-    // 初始化获取配置
-    dashboard.getConfig().then((res) => {
-      const config = res.customConfig as unknown as IConfig;
-      updateConfig(config, setConfig)
-    });
-  }, []);
-
-
   useEffect(() => {
     const offConfigChange = dashboard.onConfigChange((res) => {
       // 监听配置变化，协同修改配置

@@ -7,6 +7,15 @@
 .color-picker-color-container {
   border: 2px solid transparent;
   border-radius: 25%;
+  &:first-child{
+    .color-picker-color{
+      border-color: var(--ccm-chart-N00);
+      .selected-icon-container {
+        border-right-color: var(--ccm-chart-N00);
+        border-bottom-color: var(--ccm-chart-N00);
+      }
+    }
+  }
 }
 .color-picker-color {
   width: 18px;
@@ -27,5 +36,4 @@
   border-top: 1px solid transparent;
   border-left: 1px solid transparent;
   transform: rotate(45deg) translate(-1px, -1px);
-  color: white;
 }
