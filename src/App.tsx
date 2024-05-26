@@ -8,53 +8,38 @@ import classnames from 'classnames'
 import MainContent from './components/MainContent';
 import MainConfigPanel from './components/MainConfigPanel';
 import { useState } from 'react';
-import type { IContentData } from '@/common/type';
+import type { IRenderData } from '@/common/type';
 import { useEffect } from 'react';
+import { getConfig, getData, renderMainContentData } from './utils';
 
 export default function App() {
     useTheme();
 
-    const isCreate = dashboard.state === DashboardState.Create
-
     /** 是否配置/创建模式下 */
-    const isConfig = dashboard.state === DashboardState.Config || isCreate;
+    const isConfig = dashboard.state === DashboardState.Config || dashboard.state === DashboardState.Create;
 
-    const [contentData, setContentData] = useState<IContentData>({
+    const [renderData, setRenderData] = useState<IRenderData>({
         color: 'primary', // 指标颜色
-        number: '123', // 指标数据
-        prefix: '$', // 前缀 
+        value: '', // 指标数据
+        prefix: '', // 前缀 
         suffix: '', // 前缀
-        momYoyList: [
-            {
-                desc: '环比增长率',
-                value: '10%',
-                color: 'green',
-                icon: 'IconTriangleUp',
-            },
-            {
-                desc: '环比增长率',
-                value: '-10%',
-                color: 'red',
-                icon: 'IconTriangleDown',
-            },
-            {
-                desc: '周同比增长值',
-                value: '0',
-                color: 'black',
-                icon: 'IconMinus',
-            }
-        ], // 同比、环比
+        momYoyList: [], // 同比、环比
     });
+
+    const renderMain = async () => {
+        const config = await getConfig();
+        const value = await getData();
+        renderMainContentData(config, value, setRenderData);
+    }
 
     // 展示态
     useEffect(() => {
         if (dashboard.state === DashboardState.View) {
-            dashboard.getData().then(data => {
-                // console.log(data, '<<<<<<<<111');
-            });
-
-            dashboard.onDataChange((data) => {
-                // console.log(data, '<<<<<<<<222');
+            renderMain();
+            dashboard.onDataChange(async (data) => {
+                const config = await getConfig();
+                const value = data.data[1].map(item => item.value as number);
+                renderMainContentData(config, value, setRenderData);
             })
         }
     }, [])
@@ -64,9 +49,9 @@ export default function App() {
             'top-border': isConfig,
             'main': true,
         })}>
-            <MainContent isConfig={isConfig} contentData={contentData} />
+            <MainContent renderData={renderData} />
             {
-                isConfig && <MainConfigPanel setContentData={setContentData} />
+                isConfig && <MainConfigPanel setRenderData={setRenderData} />
             }
         </main>
     )

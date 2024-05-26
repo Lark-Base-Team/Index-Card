@@ -236,12 +236,13 @@ export const defaultConfig: IConfig = {
   momOrYoy: [
     {
       momOrYoyDesc: t('momGrowthRate'),
+      manualSetDesc: false,
       momOrYoyCalcMethod: 'mom',
       momOrYoyCalcType: 'differenceRate',
     }
   ],
   color: 'primary',
-  iconStyle: '1',
+  iconStyleId: '1',
   decimal: 0,
   numberFormat: 'number',
   prefix: '$',

@@ -8,7 +8,7 @@ import type { IView, IDataRange, ViewDataRange, ICategory } from '@lark-base-ope
 import { Divider } from '@douyinfe/semi-ui';
 import { IConfig, ITableItem, MomOrYoy } from '@/common/type';
 import { calculationList, dateRangeList, momOrYoyCalcTypeList, statisticalTypeList } from '@/common/constant';
-import { getNewMomOrYoyCalcMethodList } from '@/utils';
+import { getMomYoyDesc, getNewMomOrYoyCalcMethodList } from '@/utils';
 
 type Mutable<T> = {
   -readonly [P in keyof T]: T[P];
@@ -26,9 +26,10 @@ interface IProps {
   getCategories: (tableId: string) => Promise<{ dateTypeList: ICategory[]; numberOrCurrencyList: ICategory[]; }>;
   numberOrCurrencyList: ICategory[];
   setNumberOrCurrencyList: (data: ICategory[]) => void;
+  resetData: (config: IConfig) => void;
 }
 
-export default function PanelTypeAndData({ config, setConfig, tableList, tableRangeList, getTableRange, setTableRangeList, dateTypeList, setDateTypeList, getCategories, numberOrCurrencyList, setNumberOrCurrencyList }: IProps) {
+export default function PanelTypeAndData({ config, setConfig, tableList, tableRangeList, getTableRange, setTableRangeList, dateTypeList, setDateTypeList, getCategories, numberOrCurrencyList, setNumberOrCurrencyList, resetData }: IProps) {
   const { t } = useTranslation();
 
   const defaultViewId = config.tableRange.type === SourceType.ALL ? 'ALL' : config.tableRange.viewId;
@@ -36,87 +37,69 @@ export default function PanelTypeAndData({ config, setConfig, tableList, tableRa
   const [newMomOrYoyCalcMethodList, setNewMomOrYoyCalcMethodList] = useState(getNewMomOrYoyCalcMethodList(config.dateRange))
 
   const tableChange = async (tableId: any) => {
-    setConfig({
-      ...config,
-      tableId,
-      tableRange: { type: SourceType.ALL },
-    })
-    const rangeList = await getTableRange(tableId)
-    setTableRangeList(rangeList)
-    const { dateTypeList, numberOrCurrencyList } = await getCategories(tableId);
-    setDateTypeList(dateTypeList);
-    setNumberOrCurrencyList(numberOrCurrencyList);
+    config.tableId = tableId;
+    config.tableRange = { type: SourceType.ALL };
+    setTableRangeViewId('ALL');
+    resetData(config);
   }
 
-  const tableRangeChange = async (tableRangeViewId: any) => {
-    setTableRangeViewId(tableRangeViewId);
+  const tableRangeChange = async (viewId: any) => {
+    setTableRangeViewId(viewId);
     let tableRange: IDataRange;
     if (tableRangeViewId === 'ALL') {
       tableRange = { type: SourceType.ALL };
     } else {
       tableRange = tableRangeList.find((item) => (item as ViewDataRange).viewId === tableRangeViewId) as IDataRange;
-
     }
-    setConfig({
-      ...config,
-      tableRange,
-    })
+    setConfig({ ...config, tableRange, })
   }
 
   const dateTypeChange = (dateTypeFieldId: any) => {
-    setConfig({
-      ...config,
-      dateTypeFieldId,
-    })
+    setConfig({ ...config, dateTypeFieldId })
   }
 
   const dateRangeChange = (dateRange: any) => {
     setNewMomOrYoyCalcMethodList(getNewMomOrYoyCalcMethodList(dateRange));
-    setConfig({
-      ...config,
-      dateRange,
-      momOrYoy: config.momOrYoy.map((item) => {
-        item.momOrYoyCalcMethod = 'mom'
-        return item;
-      })
-    });
+    const momOrYoy = config.momOrYoy.map((item) => {
+      item.momOrYoyCalcMethod = 'mom'
+      return item;
+    })
+    setConfig({ ...config, dateRange, momOrYoy });
   }
 
   const statisticalTypeChange = (statisticalType: any) => {
-    setConfig({
-      ...config,
-      statisticalType,
-    })
+    setConfig({ ...config, statisticalType })
   }
 
   const statisticalCalcTypeChange = (statisticalCalcType: any) => {
-    setConfig({
-      ...config,
-      statisticalCalcType,
-    })
+    setConfig({ ...config, statisticalCalcType })
   }
 
   const numberOrCurrencyFieldIdChange = (numberOrCurrencyFieldId: any) => {
-    setConfig({
-      ...config,
-      numberOrCurrencyFieldId,
-    })
+    setConfig({ ...config, numberOrCurrencyFieldId, })
   }
 
   const momOrYoyDescChange = (momOrYoyItem: MomOrYoy, momOrYoyDesc: any, index: number) => {
     momOrYoyItem.momOrYoyDesc = momOrYoyDesc;
-    config.momOrYoy[index] = momOrYoyItem
+    momOrYoyItem.manualSetDesc = true;
+    config.momOrYoy[index] = momOrYoyItem;
     setConfig({ ...config })
   }
 
   const momOrYoyCalcMethodChange = (momOrYoyItem: MomOrYoy, momOrYoyCalcMethod: any, index: number) => {
     momOrYoyItem.momOrYoyCalcMethod = momOrYoyCalcMethod;
+    if (!momOrYoyItem.manualSetDesc) {
+      momOrYoyItem.momOrYoyDesc = getMomYoyDesc(momOrYoyCalcMethod, momOrYoyItem.momOrYoyCalcType)
+    }
     config.momOrYoy[index] = momOrYoyItem
     setConfig({ ...config })
   }
 
   const momOrYoyCalcTypeChange = (momOrYoyItem: MomOrYoy, momOrYoyCalcType: any, index: number) => {
     momOrYoyItem.momOrYoyCalcType = momOrYoyCalcType;
+    if (!momOrYoyItem.manualSetDesc) {
+      momOrYoyItem.momOrYoyDesc = getMomYoyDesc(momOrYoyItem.momOrYoyCalcMethod, momOrYoyCalcType)
+    }
     config.momOrYoy[index] = momOrYoyItem
     setConfig({ ...config })
   }
@@ -125,6 +108,7 @@ export default function PanelTypeAndData({ config, setConfig, tableList, tableRa
   const addMomOrYoyItem = () => {
     const item: MomOrYoy = {
       momOrYoyDesc: t('momGrowthRate'),
+      manualSetDesc: false,
       momOrYoyCalcMethod: 'mom',
       momOrYoyCalcType: 'differenceRate',
     }
@@ -139,10 +123,6 @@ export default function PanelTypeAndData({ config, setConfig, tableList, tableRa
     config.momOrYoy.splice(index, 1);
     setConfig({ ...config })
   }
-
-  useEffect(() => {
-    console.log('aaa');
-  })
 
   return (
     <div className="form-main">

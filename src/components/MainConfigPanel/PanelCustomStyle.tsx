@@ -8,6 +8,7 @@ import type { ColorName } from '../ColorPicker';
 import { IConfig } from '@/common/type';
 import { dataFormatList, iconStyleList, } from '@/common/constant';
 import { getIcon } from '@/utils';
+import { IconMinus } from '@douyinfe/semi-icons';
 
 export default function PanelCustomStyle({ config, setConfig }: { config: IConfig; setConfig: (data: IConfig) => void }) {
 
@@ -20,10 +21,10 @@ export default function PanelCustomStyle({ config, setConfig }: { config: IConfi
     })
   }
 
-  const iconStyleChange = (iconStyle: any) => {
+  const iconStyleChange = (iconStyleId: any) => {
     setConfig({
       ...config,
-      iconStyle,
+      iconStyleId,
     })
   }
 
@@ -67,7 +68,7 @@ export default function PanelCustomStyle({ config, setConfig }: { config: IConfi
       </div>
       <div className='form-title'>{t('iconStyle')}</div>
       <div className='form-item'>
-        <Select value={config.iconStyle} onChange={iconStyleChange}>
+        <Select value={config.iconStyleId} onChange={iconStyleChange}>
           {iconStyleList.map((item) =>
           (<Select.Option value={item.id} key={item.id}>
             <div className='index-icon'>
@@ -76,7 +77,7 @@ export default function PanelCustomStyle({ config, setConfig }: { config: IConfi
                 <div className='number'>10</div>
               </div>
               <div className={classnames('index-icon-item', item.constIconColor)}>
-                {getIcon(item.constIcon)}
+                <IconMinus size='small' />
                 <div className='number'>0</div>
               </div>
               <div className={classnames('index-icon-item', item.downIconColor)}>

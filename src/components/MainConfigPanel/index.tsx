@@ -7,11 +7,12 @@ import type { IDataCondition, IDataRange, ICategory, IFilterInfo, FilterInfoCond
 import { Tabs, TabPane } from '@douyinfe/semi-ui';
 import PanelTypeAndData from './PanelTypeAndData';
 import PanelCustomStyle from './PanelCustomStyle';
-import type { IConfig, IContentData, ITableItem } from '@/common/type';
+import type { IConfig, IMomYoyList, IRenderData, ITableItem } from '@/common/type';
 import { useConfig } from '@/hooks';
-import { defaultConfig } from '@/common/constant';
+import { defaultConfig, iconStyleList } from '@/common/constant';
+import { configFormatter, getConfig, getIconStyleObj, getMomYoyCalcResult, getPreviewData, renderMainContentData } from '@/utils';
 
-export default function MainConfigPanel({ setContentData }: { setContentData: (data: IContentData) => void }) {
+export default function MainConfigPanel({ setRenderData }: { setRenderData: (data: IRenderData) => void }) {
   const { t } = useTranslation();
   const tabList = [
     {
@@ -31,12 +32,10 @@ export default function MainConfigPanel({ setContentData }: { setContentData: (d
 
   /**保存配置 */
   const onSaveConfig = () => {
-    // dashboard.saveConfig({
-    //   customConfig: config,
-    //   dataConditions: [],
-    // } as any)
-    // console.log(config);
-    getPreviewData(config)
+    dashboard.saveConfig({
+      customConfig: config,
+      dataConditions: configFormatter(config),
+    } as any)
   }
 
   const [tableList, setTableList] = useState<ITableItem[]>([]);
@@ -72,68 +71,55 @@ export default function MainConfigPanel({ setContentData }: { setContentData: (d
     };
   }, [])
 
-  const initData = async () => {
-    if (dashboard.state === DashboardState.Config || dashboard.state === DashboardState.Create) {
-      const tableList = await getTableList();
-      setTableList(tableList);
-      let configObj = { ...config } as IConfig;
-      if (dashboard.state === DashboardState.Create) {
-        // 创建状态，无任务配置
-        configObj.tableId = tableList[0]?.id;
-      } else {
-        // config 初始化获取配置
-        const res = await dashboard.getConfig()
-        configObj = res.customConfig as unknown as IConfig;
-      }
-      const rangeList = await getTableRange(configObj.tableId);
-      setTableRangeList(rangeList);
-      const { dateTypeList, numberOrCurrencyList } = await getCategories(configObj.tableId);
-      setDateTypeList(dateTypeList);
-      setNumberOrCurrencyList(numberOrCurrencyList);
-      if (dashboard.state === DashboardState.Create) {
-        if (numberOrCurrencyList.length > 0) {
-          configObj.statisticalType = 'number';
-          configObj.numberOrCurrencyFieldId = numberOrCurrencyList[0].fieldId
-        } else {
-          configObj.statisticalType = 'total';
-        }
-      }
-      setConfig({ ...configObj })
-      getPreviewData(configObj)
+  const resetData = async (config: IConfig) => {
+    const rangeList = await getTableRange(config.tableId);
+    setTableRangeList(rangeList);
+    const { dateTypeList, numberOrCurrencyList } = await getCategories(config.tableId);
+    setDateTypeList(dateTypeList);
+    setNumberOrCurrencyList(numberOrCurrencyList);
+    config.dateTypeFieldId = dateTypeList[0].fieldId || '';
+    if (numberOrCurrencyList.length > 0) {
+      config.statisticalType = 'number';
+      config.numberOrCurrencyFieldId = numberOrCurrencyList[0].fieldId
+    } else {
+      config.statisticalType = 'total';
     }
+    setConfig({ ...config });
   }
 
-  const getPreviewData = async (configObj: IConfig) => {
-    const dataRange: IDataRange = {
-      ...configObj.tableRange,
-      // filterInfo: {
-      //   conjunction: FilterConjunction.Or,
-      //   conditions: [{
-      //     fieldId: configObj.dateTypeFieldId,
-      //     value: configObj.dateRange,
-      //     fieldType: 5,
-      //     operator: FilterOperator.Is,
-      //   }]
-      // }
+  const initData = async () => {
+    console.log('initData');
+    const tableList = await getTableList();
+    setTableList(tableList);
+    let configObj = {} as IConfig;
+    if (dashboard.state === DashboardState.Create) {
+      // 创建状态，无任务配置
+      configObj = { ...config }
+      configObj.tableId = tableList[0]?.id;
+    } else {
+      // config 初始化获取配置
+      configObj = await getConfig()
     }
-    const previewConfig = {
-      tableId: configObj.tableId,
-      dataRange,
-      series: [
-        {
-          fieldId: configObj.numberOrCurrencyFieldId,
-          rollup: configObj.statisticalCalcType
-        }
-      ],
-    }
-    console.log('previewConfig', previewConfig);
-    const data = await dashboard.getPreviewData(previewConfig);
-    console.log('>>>>>>>>>>>>>>', data);
+    resetData(configObj);
   }
 
   useEffect(() => {
     initData()
   }, [getTableList, getTableRange, getCategories])
+
+  const renderMain = async () => {
+    if (config.tableId) {
+      const dataCondition = configFormatter(config);
+      const value = await getPreviewData(dataCondition);
+      renderMainContentData(config, value, setRenderData);
+    }
+
+  }
+
+  // 每次配置变化，重新获取指标数据
+  useEffect(() => {
+    renderMain()
+  }, [config])
 
   return (
     <div className='main-config-panel left-border'>
@@ -154,6 +140,7 @@ export default function MainConfigPanel({ setContentData }: { setContentData: (d
                   getCategories={getCategories}
                   numberOrCurrencyList={numberOrCurrencyList}
                   setNumberOrCurrencyList={setNumberOrCurrencyList}
+                  resetData={resetData}
                 />
               )}
               {item.key === '2' && <PanelCustomStyle config={config} setConfig={setConfig} />}

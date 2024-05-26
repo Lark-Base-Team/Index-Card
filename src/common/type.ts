@@ -3,16 +3,19 @@ import type { IDataRange, Rollup, FilterDuration } from '@lark-base-open/js-sdk'
 import type { ColorName } from '@/components/ColorPicker';
 import { statisticalTypeList, momOrYoyCalcMethodList, momOrYoyCalcTypeList, iconStyleList, dataFormatList, icons } from '@/common/constant';
 
+export type IconColor = 'red' | 'black' | 'green';
+
 export interface IMomYoyList {
   desc: string;
   value: string;
-  color: 'red' | 'black' | 'green';
+  color: IconColor;
+  calcType: MomOrYoyCalcType
   icon: keyof typeof icons;
 }
 
-export interface IContentData {
+export interface IRenderData {
   color: ColorName; // 颜色
-  number: string; // 指标数据
+  value: string; // 指标数据
   prefix: string; // 前缀 
   suffix: string; // 前缀
   momYoyList: IMomYoyList[], // 环同比数据
@@ -22,10 +25,11 @@ export type DateType = FieldType.DateTime | FieldType.CreatedTime | FieldType.Mo
 export type StatisticalType = typeof statisticalTypeList[number]['value'];
 export type MomOrYoyCalcMethod = typeof momOrYoyCalcMethodList[number]['value'];
 export type MomOrYoyCalcType = typeof momOrYoyCalcTypeList[number]['value'];
-export type IconStyle = typeof iconStyleList[number]['id'];
+export type IconStyleId = typeof iconStyleList[number]['id'];
 export type NumberFormat = typeof dataFormatList[number]['value'];
 export type MomOrYoy = {
-  momOrYoyDesc: string; // 环比/同比描述
+  momOrYoyDesc: string; // 环比/同比指标描述
+  manualSetDesc: boolean; // 是否手动设置过指标描述
   momOrYoyCalcMethod: MomOrYoyCalcMethod; // 环比/同比计算方式
   momOrYoyCalcType: MomOrYoyCalcType; // 环比/同比计算类型
 };
@@ -57,7 +61,7 @@ export interface IConfig {
   statisticalCalcType: Rollup; // 统计计算类型
   momOrYoy: MomOrYoy[]; // 环同比
   color: ColorName; // 颜色
-  iconStyle: IconStyle; // 图标样式
+  iconStyleId: IconStyleId; // 图标样式
   decimal: number;  // 小数位数
   numberFormat: NumberFormat; // 数字格式
   prefix: string; // 前缀
