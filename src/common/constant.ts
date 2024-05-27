@@ -2,7 +2,7 @@ import { IconMinus, IconTriangleUp, IconTriangleDown, IconFilledArrowUp, IconFil
 import { FilterDuration, SourceType, Rollup } from "@lark-base-open/js-sdk";
 import { t } from 'i18next';
 import type { IConfig } from '@/common/type'
-// import { MyFilterDuration } from '@/common/type'
+import { MyFilterDuration } from '@/common/type'
 
 export const dateRangeList = [
   {
@@ -29,46 +29,46 @@ export const dateRangeList = [
     label: t('lastMonth'),
     value: FilterDuration.LastMonth,
   },
-  // {
-  //   label: t('currentQuarter'),
-  //   value: MyFilterDuration.CurrentQuarter,
-  // },
-  // {
-  //   label: t('lastQuarter'),
-  //   value: MyFilterDuration.LastQuarter,
-  // },
-  // {
-  //   label: t('currentYear'),
-  //   value: MyFilterDuration.CurrentYear,
-  // },
-  // {
-  //   label: t('lastYear'),
-  //   value: MyFilterDuration.LastYear,
-  // },
+  {
+    label: t('currentQuarter'),
+    value: MyFilterDuration.CurrentQuarter,
+  },
+  {
+    label: t('lastQuarter'),
+    value: MyFilterDuration.LastQuarter,
+  },
+  {
+    label: t('currentYear'),
+    value: MyFilterDuration.CurrentYear,
+  },
+  {
+    label: t('lastYear'),
+    value: MyFilterDuration.LastYear,
+  },
   {
     label: t('last7Days'),
     value: FilterDuration.TheLastWeek,
   },
-  // {
-  //   label: t('last14Days'),
-  //   value: MyFilterDuration.Last14Days,
-  // },
+  {
+    label: t('last14Days'),
+    value: MyFilterDuration.Last14Days,
+  },
   {
     label: t('last30Days'),
     value: FilterDuration.TheLastMonth,
   },
-  // {
-  //   label: t('last365Days'),
-  //   value: MyFilterDuration.Last365Days,
-  // },
-  // {
-  //   label: t('last3Months'),
-  //   value: MyFilterDuration.Last3Months,
-  // },
-  // {
-  //   label: t('last6Months'),
-  //   value: MyFilterDuration.Last6Months,
-  // },
+  {
+    label: t('last365Days'),
+    value: MyFilterDuration.Last365Days,
+  },
+  {
+    label: t('last3Months'),
+    value: MyFilterDuration.Last3Months,
+  },
+  {
+    label: t('last6Months'),
+    value: MyFilterDuration.Last6Months,
+  },
 ] as const;
 
 export const statisticalTypeList = [

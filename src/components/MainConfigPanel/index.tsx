@@ -2,15 +2,15 @@ import './index.scss'
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@douyinfe/semi-ui';
-import { dashboard, DashboardState, base, SourceType, FieldType, FilterConjunction, FilterOperator } from "@lark-base-open/js-sdk";
+import { dashboard, DashboardState, base, SourceType, FieldType, FilterConjunction, FilterOperator, FilterDuration } from "@lark-base-open/js-sdk";
 import type { IDataCondition, IDataRange, ICategory, IFilterInfo, FilterInfoCondition, } from '@lark-base-open/js-sdk';
 import { Tabs, TabPane } from '@douyinfe/semi-ui';
 import PanelTypeAndData from './PanelTypeAndData';
 import PanelCustomStyle from './PanelCustomStyle';
-import type { IConfig, IMomYoyList, IRenderData, ITableItem } from '@/common/type';
+import { MyFilterDuration, type IConfig, type IMomYoyList, type IRenderData, type ITableItem } from '@/common/type';
 import { useConfig } from '@/hooks';
 import { defaultConfig, iconStyleList } from '@/common/constant';
-import { configFormatter, getConfig, getIconStyleObj, getMomYoyCalcResult, getPreviewData, renderMainContentData } from '@/utils';
+import { configFormatter, getConfig, getIconStyleObj, getMomYoyCalcResult, getMomYoyDateRange, getPreviewData, renderMainContentData } from '@/utils';
 
 export default function MainConfigPanel({ setRenderData }: { setRenderData: (data: IRenderData) => void }) {
   const { t } = useTranslation();
@@ -36,6 +36,7 @@ export default function MainConfigPanel({ setRenderData }: { setRenderData: (dat
       customConfig: config,
       dataConditions: configFormatter(config),
     } as any)
+    console.log(getMomYoyDateRange(FilterDuration.LastMonth, 'yoyByYear'));
   }
 
   const [tableList, setTableList] = useState<ITableItem[]>([]);

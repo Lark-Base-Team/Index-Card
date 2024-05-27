@@ -1,9 +1,10 @@
 import { iconStyleList, icons, momOrYoyCalcMethodList } from '@/common/constant';
 import { DashboardState, FilterDuration, IDataCondition, IDataRange, dashboard } from "@lark-base-open/js-sdk";
-import { IConfig, IMomYoyList, IRenderData, IconColor, IconStyleId, MomOrYoyCalcMethod, MomOrYoyCalcType, MyFilterDuration, NumberFormat } from '@/common/type'
+import { DateRangeType, IConfig, IMomYoyList, IRenderData, IconColor, IconStyleId, MomOrYoyCalcMethod, MomOrYoyCalcType, MyFilterDuration, NumberFormat } from '@/common/type'
 import dayjs from 'dayjs';
 import quarterOfYear from 'dayjs/plugin/quarterOfYear'
 import { t } from 'i18next';
+dayjs.extend(quarterOfYear) // 季度插件
 
 /**
  * 数字字符串转为千分位字符串
@@ -34,20 +35,34 @@ export const indexNumberFormatter = (index: number, formatterType: NumberFormat,
 /**
  * 获取同比环比列表，在某些情况下需要禁用部分选项
 */
-export const getNewMomOrYoyCalcMethodList = (dateRange: FilterDuration) => {
-  // 都可用
-  if (dateRange === FilterDuration.Today || dateRange === FilterDuration.Yesterday) {
+export const getNewMomOrYoyCalcMethodList = (dateRange: DateRangeType) => {
+  // 全部选项可用
+  const allAvailable = [FilterDuration.Today, FilterDuration.Yesterday] as any[]
+  if (allAvailable.includes(dateRange)) {
     return momOrYoyCalcMethodList
   }
+
   // 只有环比可用
-  if (dateRange === FilterDuration.CurrentWeek || dateRange === FilterDuration.LastWeek || dateRange === FilterDuration.TheLastWeek || dateRange === FilterDuration.TheLastMonth) {
+  const onlyMomAvailable = [FilterDuration.CurrentWeek, FilterDuration.LastWeek, FilterDuration.TheLastWeek, MyFilterDuration.Last14Days, FilterDuration.TheLastMonth, MyFilterDuration.Last365Days, MyFilterDuration.Last3Months, MyFilterDuration.Last6Months]
+  if (onlyMomAvailable.includes(dateRange)) {
     return momOrYoyCalcMethodList.map(item => ({
       ...item,
       disabled: !(item.value === 'mom')
     }))
   }
-  // 环比、月同比、周同比可用
-  if (dateRange === FilterDuration.CurrentMonth || dateRange === FilterDuration.LastMonth) {
+
+  // 环比、年同比可用
+  const momAndYoyByYearAvailable = [MyFilterDuration.CurrentQuarter, MyFilterDuration.LastQuarter, MyFilterDuration.CurrentYear, MyFilterDuration.LastYear] as any[]
+  if (momAndYoyByYearAvailable.includes(dateRange)) {
+    return momOrYoyCalcMethodList.map(item => ({
+      ...item,
+      disabled: item.value === 'yoyByWeek' || item.value === 'yoyByMonth'
+    }))
+  }
+
+  // 只有周同比不可用
+  const onlyYoyDisabled = [FilterDuration.CurrentMonth, FilterDuration.LastMonth] as any[]
+  if (onlyYoyDisabled.includes(dateRange)) {
     return momOrYoyCalcMethodList.map(item => ({
       ...item,
       disabled: item.value === 'yoyByWeek'
@@ -58,36 +73,181 @@ export const getNewMomOrYoyCalcMethodList = (dateRange: FilterDuration) => {
 }
 
 /**
- * 部分SDK不支持的时间类型需要转换成时间戳
+ * 把时间范围枚举获得对应的时间戳范围
 */
-export const dateTypeFormatter = (dateType: FilterDuration | MyFilterDuration) => {
-  if (dateType in FilterDuration) {
-    return dateType
+export const getDateRangeTimestamp = (dateTypeRange: DateRangeType) => {
+  type DateTypeRangeMap = {
+    [key in DateRangeType]: () => {
+      startTime: number;
+      endTime: number;
+    }
+  }
+  const dateTypeRangeMap: DateTypeRangeMap = {
+    [FilterDuration.Today]: () => {
+      const startTime = dayjs().startOf('day').valueOf()
+      const endTime = dayjs().valueOf()
+      return { startTime, endTime }
+    },
+    [FilterDuration.Yesterday]: () => {
+      const startTime = dayjs().subtract(1, 'day').startOf('day').valueOf()
+      const endTime = dayjs().subtract(1, 'day').endOf('day').valueOf()
+      return { startTime, endTime }
+    },
+    [FilterDuration.CurrentWeek]: () => {
+      const startTime = dayjs().startOf('week').valueOf()
+      const endTime = dayjs().valueOf()
+      return { startTime, endTime }
+    },
+    [FilterDuration.LastWeek]: () => {
+      const startTime = dayjs().startOf('week').subtract(1, 'week').valueOf()
+      const endTime = dayjs().endOf('week').subtract(1, 'week').valueOf()
+      return { startTime, endTime }
+    },
+    [FilterDuration.CurrentMonth]: () => {
+      const startTime = dayjs().startOf('month').valueOf()
+      const endTime = dayjs().valueOf()
+      return { startTime, endTime }
+    },
+    [FilterDuration.LastMonth]: () => {
+      const startTime = dayjs().startOf('month').subtract(1, 'month').valueOf()
+      const endTime = dayjs().endOf('month').subtract(1, 'month').valueOf()
+      return { startTime, endTime }
+    },
+    [MyFilterDuration.CurrentQuarter]: () => {
+      const startTime = dayjs().startOf('quarter').valueOf()
+      const endTime = dayjs().valueOf()
+      return { startTime, endTime }
+    },
+    [MyFilterDuration.LastQuarter]: () => {
+      const startTime = dayjs().startOf('quarter').subtract(1, 'quarter').valueOf()
+      const endTime = dayjs().endOf('quarter').subtract(1, 'quarter').valueOf()
+      return { startTime, endTime }
+    },
+    [MyFilterDuration.CurrentYear]: () => {
+      const startTime = dayjs().startOf('year').valueOf()
+      const endTime = dayjs().valueOf()
+      return { startTime, endTime }
+    },
+    [MyFilterDuration.LastYear]: () => {
+      const startTime = dayjs().startOf('year').subtract(1, 'year').valueOf()
+      const endTime = dayjs().endOf('year').subtract(1, 'year').valueOf()
+      return { startTime, endTime }
+    },
+    [FilterDuration.TheLastWeek]: () => {
+      const startTime = dayjs().subtract(7, 'day').valueOf()
+      const endTime = dayjs().valueOf()
+      return { startTime, endTime }
+    },
+    [MyFilterDuration.Last14Days]: () => {
+      const startTime = dayjs().subtract(14, 'day').valueOf()
+      const endTime = dayjs().valueOf()
+      return { startTime, endTime }
+    },
+    [FilterDuration.TheLastMonth]: () => {
+      const startTime = dayjs().subtract(30, 'day').valueOf()
+      const endTime = dayjs().valueOf()
+      return { startTime, endTime }
+    },
+    [MyFilterDuration.Last365Days]: () => {
+      const startTime = dayjs().subtract(365, 'day').valueOf()
+      const endTime = dayjs().valueOf()
+      return { startTime, endTime }
+    },
+    [MyFilterDuration.Last3Months]: () => {
+      const startTime = dayjs().subtract(3, 'month').valueOf()
+      const endTime = dayjs().valueOf()
+      return { startTime, endTime }
+    },
+    [MyFilterDuration.Last6Months]: () => {
+      const startTime = dayjs().subtract(6, 'month').valueOf()
+      const endTime = dayjs().valueOf()
+      return { startTime, endTime }
+    },
+  }
+  return dateTypeRangeMap[dateTypeRange]()
+}
+
+/**
+ * 根据时间范围枚举和环同比类型获取dayjs的subtract参数value
+*/
+export const getSubtractParamsValue = (dateTypeRange: DateRangeType) => {
+  let value = 1;
+  const valueBy1 = [FilterDuration.Today, FilterDuration.Yesterday, FilterDuration.CurrentWeek, FilterDuration.LastWeek, FilterDuration.CurrentMonth, FilterDuration.LastMonth, MyFilterDuration.CurrentQuarter, MyFilterDuration.LastQuarter, MyFilterDuration.CurrentYear, MyFilterDuration.LastYear];
+  if (valueBy1.includes(dateTypeRange)) {
+    value = 1;
+  }
+  if (dateTypeRange === FilterDuration.TheLastWeek) {
+    value = 7;
+  }
+  if (dateTypeRange === MyFilterDuration.Last14Days) {
+    value = 14;
+  }
+  if (dateTypeRange === FilterDuration.TheLastMonth) {
+    value = 30;
+  }
+  if (dateTypeRange === MyFilterDuration.Last365Days) {
+    value = 365;
+  }
+  if (dateTypeRange === MyFilterDuration.Last3Months) {
+    value = 3;
+  }
+  if (dateTypeRange === MyFilterDuration.Last6Months) {
+    value = 6;
+  }
+  return value
+}
+
+/**
+ * 根据时间范围枚举和环同比类型获取dayjs的subtract参数unit
+*/
+export const getSubtractParamsUnit = (dateTypeRange: DateRangeType, momYoyCalcMethod: MomOrYoyCalcMethod) => {
+  type Unit = 'day' | 'week' | 'month' | 'quarter' | 'year';
+  let unit: Unit = 'day';
+
+  const arr1 = [FilterDuration.Today, FilterDuration.Yesterday, FilterDuration.TheLastWeek, MyFilterDuration.Last14Days, FilterDuration.TheLastMonth, MyFilterDuration.Last365Days];
+  if (arr1.includes(dateTypeRange) && momYoyCalcMethod === 'mom') {
+    unit = 'day';
   }
 
-  type DateTypeMap = {
-    [key in MyFilterDuration]: () => any;
+  const arr2 = [FilterDuration.CurrentWeek, FilterDuration.LastWeek];
+  const arr3 = [FilterDuration.Today, FilterDuration.Yesterday];
+  if ((arr2.includes(dateTypeRange as any) && momYoyCalcMethod === 'mom') || (arr3.includes(dateTypeRange as any) && momYoyCalcMethod === 'yoyByWeek')) {
+    unit = 'week';
   }
-  const dateTypeMap: DateTypeMap = {
-    [MyFilterDuration.CurrentQuarter]: () => {
-      dayjs.extend(quarterOfYear)
-      const startOfQuarter = dayjs().startOf('quarter').valueOf()
-      const endOfQuarter = dayjs().valueOf()
-      return {
-        start: startOfQuarter,
-        end: endOfQuarter,
-      }
-    },
-    [MyFilterDuration.LastQuarter]: () => { },
-    [MyFilterDuration.CurrentYear]: () => { },
-    [MyFilterDuration.LastYear]: () => { },
-    [MyFilterDuration.Last14Days]: () => { },
-    [MyFilterDuration.Last365Days]: () => { },
-    [MyFilterDuration.Last3Months]: () => { },
-    [MyFilterDuration.Last6Months]: () => { },
+
+  const arr4 = [FilterDuration.CurrentMonth, FilterDuration.LastMonth, MyFilterDuration.Last3Months, MyFilterDuration.Last6Months]
+  const arr5 = [FilterDuration.Today, FilterDuration.Yesterday, FilterDuration.CurrentMonth, FilterDuration.LastMonth];
+  if ((arr4.includes(dateTypeRange) && momYoyCalcMethod === 'mom') || (arr5.includes(dateTypeRange as any) && momYoyCalcMethod === 'yoyByMonth')) {
+    unit = 'month';
   }
-  return dateTypeMap[dateType as MyFilterDuration]()
+
+  const arr6 = [MyFilterDuration.CurrentQuarter, MyFilterDuration.LastQuarter]
+  if (arr6.includes(dateTypeRange as any) && momYoyCalcMethod === 'mom') {
+    unit = 'quarter';
+  }
+
+  const arr7 = [MyFilterDuration.CurrentYear, MyFilterDuration.LastYear]
+  const arr8 = [FilterDuration.Today, FilterDuration.Yesterday, FilterDuration.CurrentMonth, FilterDuration.LastMonth, MyFilterDuration.CurrentQuarter, MyFilterDuration.LastQuarter, MyFilterDuration.CurrentYear, MyFilterDuration.LastYear]
+  if ((arr7.includes(dateTypeRange as any) && momYoyCalcMethod === 'mom') || (arr8.includes(dateTypeRange as any) && momYoyCalcMethod === 'yoyByYear')) {
+    unit = 'year';
+  }
+  return unit
 }
+
+/**
+ * 根据时间范围枚举和环同比类型获取对应开始时间和结束时间
+*/
+export const getMomYoyDateRange = (dateTypeRange: DateRangeType, momYoyCalcMethod: MomOrYoyCalcMethod) => {
+  const value = getSubtractParamsValue(dateTypeRange);
+  const unit = getSubtractParamsUnit(dateTypeRange, momYoyCalcMethod);
+  console.log(value, unit);
+  const { startTime, endTime } = getDateRangeTimestamp(dateTypeRange);
+  console.log(dayjs(startTime).format('YYYY-MM-DD HH:mm:ss'), dayjs(endTime).format('YYYY-MM-DD HH:mm:ss'));
+  const timeStart = dayjs(startTime).subtract(value, unit as any).format('YYYY-MM-DD HH:mm:ss')
+  const timeEnd = dayjs(endTime).subtract(value, unit as any).format('YYYY-MM-DD HH:mm:ss')
+  return { startTime: timeStart, endTime: timeEnd }
+}
+
 
 /**
  * 根据环同比的指标获取对应的图标和颜色

@@ -21,7 +21,6 @@ export interface IRenderData {
   momYoyList: IMomYoyList[], // 环同比数据
 }
 
-export type DateType = FieldType.DateTime | FieldType.CreatedTime | FieldType.ModifiedTime;
 export type StatisticalType = typeof statisticalTypeList[number]['value'];
 export type MomOrYoyCalcMethod = typeof momOrYoyCalcMethodList[number]['value'];
 export type MomOrYoyCalcType = typeof momOrYoyCalcTypeList[number]['value'];
@@ -55,7 +54,7 @@ export interface IConfig {
   tableId: string; // 数据源
   tableRange: IDataRange; //数据范围
   dateTypeFieldId: string; // 日期类型字段的Id
-  dateRange: FilterDuration; // 日期范围
+  dateRange: DateRangeType; // 日期范围
   statisticalType: StatisticalType; // 统计方式
   numberOrCurrencyFieldId: string; // 统计数值字段类型
   statisticalCalcType: Rollup; // 统计计算类型
@@ -72,3 +71,6 @@ export interface ITableItem {
   id: string;
   label: string;
 }
+
+type ExcludeKeys = FilterDuration.Tomorrow | FilterDuration.TheNextWeek | FilterDuration.TheNextMonth;
+export type DateRangeType = Exclude<FilterDuration, ExcludeKeys> | MyFilterDuration;
