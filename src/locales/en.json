@@ -1,7 +1,7 @@
 {
   "type_Date": "类型与数据en",
-  "dataSource": "数据源en",
-  "dataRange": "数据范围en",
+  "dataSource": "Data source",
+  "dataRange": "Data range",
   "dateFiltering": "日期筛选en",
   "date": "日期en",
   "createDate": "创建日期en",
@@ -53,6 +53,8 @@
   "weekYoyGrowthRate": "周同比增长率en",
   "monthYoyGrowthRate": "月同比增长率en",
   "yearYoyGrowthRate": "年同比增长率en",
+  "growthValue": "增长值en",
+  "growthRate":"增长率en",
   "differenceRate": "差异率en",
   "differenceValue": "差异值en",
   "originalValue": "原始值en",
@@ -68,6 +70,7 @@
   "suffix": "后缀en",
   "prefixPlaceholder": "请输入前缀en",
   "suffixPlaceholder": "请输入后缀en",
+  "dataPlaceholder": "请选择日期字段en",
   "formatErrorMessage": "仅允许输入大于零的整数en",
   "allData": "全部数据en",
   "confirm": "确定en"

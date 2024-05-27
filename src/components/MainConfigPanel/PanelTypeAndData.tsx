@@ -153,7 +153,7 @@ export default function PanelTypeAndData({ config, setConfig, tableList, tableRa
       <div className="form-title">{t('dateFiltering')}</div>
       <div className='form-item'>
         <div className='form-subTitle'>{t('basis')}</div>
-        <Select value={config.dateTypeFieldId} onChange={dateTypeChange}>
+        <Select value={config.dateTypeFieldId} onChange={dateTypeChange} placeholder={t('dataPlaceholder')}>
           {dateTypeList.map((item) =>
             (<Select.Option value={item.fieldId} key={item.fieldId}>{item.fieldName}</Select.Option>))
           }

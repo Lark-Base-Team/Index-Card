@@ -6,14 +6,12 @@ import { LocaleProvider } from '@douyinfe/semi-ui';
 import dayjs from 'dayjs';
 import zh_CN from '@douyinfe/semi-ui/lib/es/locale/source/zh_CN';
 import en_US from '@douyinfe/semi-ui/lib/es/locale/source/en_US';
+import ja_JP from '@douyinfe/semi-ui/lib/es/locale/source/ja_JP';
 
 dayjs.locale('en-us');
 
 export default function LoadApp(props: { neverShowBanner?: boolean, children: ReactElement }): ReactElement {
-  const [loadErr, setLoadErr] = useState(false);
   const [locale, setLocale] = useState(en_US);
-
-  const TopBanner = <div></div>
 
   useEffect(() => {
     if (props.neverShowBanner) return;
@@ -27,9 +25,12 @@ export default function LoadApp(props: { neverShowBanner?: boolean, children: Re
         setLocale(zh_CN);
         dayjs.locale('zh-cn');
       }
-      setLoadErr(false)
-    }).catch(() => {
-      setLoadErr(true)
+
+      if (v === 'ja') {
+        setLocale(ja_JP);
+      }
+    }).catch((e) => {
+      console.error(e);
     })
   }, [])
 
@@ -39,7 +40,6 @@ export default function LoadApp(props: { neverShowBanner?: boolean, children: Re
   }
 
   return <div>
-    {loadErr && TopBanner}
     <LocaleProvider locale={locale}>
       {props.children}
     </LocaleProvider>
