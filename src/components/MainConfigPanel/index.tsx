@@ -1,7 +1,7 @@
 import './index.scss'
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button } from '@douyinfe/semi-ui';
+import { Button, Toast } from '@douyinfe/semi-ui';
 import { dashboard, DashboardState, base, SourceType, FieldType } from "@lark-base-open/js-sdk";
 import type { IDataRange, ICategory } from '@lark-base-open/js-sdk';
 import { Tabs, TabPane } from '@douyinfe/semi-ui';
@@ -11,6 +11,7 @@ import type { IConfig, IRenderData, ITableItem } from '@/common/type';
 import { useConfig } from '@/hooks';
 import { defaultConfig } from '@/common/constant';
 import { configFormatter, getConfig, getPreviewData, renderMainContentData } from '@/utils';
+import { debounce } from 'lodash-es';
 
 export default function MainConfigPanel({ setRenderData }: { setRenderData: (data: IRenderData) => void }) {
   const { t } = useTranslation();
@@ -32,10 +33,15 @@ export default function MainConfigPanel({ setRenderData }: { setRenderData: (dat
 
   /**保存配置 */
   const onSaveConfig = () => {
-    dashboard.saveConfig({
-      customConfig: config,
-      dataConditions: configFormatter(config),
-    } as any);
+    if (!config.dateTypeFieldId) {
+      Toast.error(t('dataPlaceholder'));
+      return;
+    }
+    console.log(configFormatter(config));
+    // dashboard.saveConfig({
+    //   customConfig: config,
+    //   dataConditions: configFormatter(config),
+    // } as any);
   }
 
   const [tableList, setTableList] = useState<ITableItem[]>([]);
@@ -108,15 +114,17 @@ export default function MainConfigPanel({ setRenderData }: { setRenderData: (dat
 
   const renderMain = async () => {
     if (config.tableId) {
-      const dataCondition = configFormatter(config);
-      const value = await getPreviewData(dataCondition);
+      const dataConditionList = configFormatter(config);
+      console.log(dataConditionList, 'dataConditionList');
+      const value = await getPreviewData(dataConditionList);
       renderMainContentData(config, value, setRenderData);
     }
   }
+  const renderMainDebounce = debounce(renderMain, 500)
 
   // 每次配置变化，重新获取指标数据
   useEffect(() => {
-    renderMain();
+    renderMainDebounce();
   }, [config]);
 
   return (

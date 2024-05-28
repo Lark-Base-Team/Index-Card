@@ -1,6 +1,6 @@
 import { iconStyleList, icons, momOrYoyCalcMethodList } from '@/common/constant';
-import { DashboardState, FilterDuration, IDataCondition, IDataRange, dashboard } from "@lark-base-open/js-sdk";
-import { DateRangeType, IConfig, IMomYoyList, IRenderData, IconColor, IconStyleId, MomOrYoyCalcMethod, MomOrYoyCalcType, MyFilterDuration, NumberFormat } from '@/common/type'
+import { DashboardState, FilterConjunction, FilterDuration, FilterOperator, IDataCondition, IDataRange, dashboard } from "@lark-base-open/js-sdk";
+import { DateRangeType, IConfig, IMomYoyList, IRenderData, IconColor, IconStyleId, MomOrYoy, MomOrYoyCalcMethod, MomOrYoyCalcType, MyFilterDuration, NumberFormat } from '@/common/type'
 import dayjs from 'dayjs';
 import quarterOfYear from 'dayjs/plugin/quarterOfYear'
 import { t } from 'i18next';
@@ -73,7 +73,7 @@ export const getNewMomOrYoyCalcMethodList = (dateRange: DateRangeType) => {
 }
 
 /**
- * 把时间范围枚举获得对应的时间戳范围
+ * 根据时间范围枚举获得对应的时间戳范围
 */
 export const getDateRangeTimestamp = (dateTypeRange: DateRangeType) => {
   type DateTypeRangeMap = {
@@ -315,31 +315,53 @@ export const getConfig = async () => {
 
 
 export const configFormatter = (config: IConfig) => {
-  const dataRange: IDataRange = {
-    ...config.tableRange,
-    // filterInfo: {
-    //   conjunction: FilterConjunction.Or,
-    //   conditions: [{
-    //     fieldId: config.dateTypeFieldId,
-    //     value: config.dateRange,
-    //     operator: FilterOperator.Is,
-    //   }]
-    // }
-  }
-  const dataCondition: IDataCondition = {
-    tableId: config.tableId,
-    dataRange,
-    series: [
-      {
+  const formatterList = [{ dateRange: config.dateRange }, ...config.momOrYoy]
+  const dataRangeList: IDataRange[] = formatterList.map((item, index) => {
+    let startTime: number, endTime: number;
+    if (index === 0) {
+      const timeObj = getDateRangeTimestamp(config.dateRange);
+      startTime = timeObj.startTime;
+      endTime = timeObj.endTime;
+    } else {
+      const newItem = { ...item } as MomOrYoy
+      const timeObj = getMomYoyDateRange(config.dateRange, newItem.momOrYoyCalcMethod)
+      startTime = timeObj.startTime;
+      endTime = timeObj.endTime;
+    }
+    const dataRangeItem: IDataRange = {
+      ...config.tableRange,
+      // filterInfo: {
+      //   conjunction: FilterConjunction.And,
+      //   conditions: [
+      //     {
+      //       fieldId: config.dateTypeFieldId,
+      //       value: startTime,
+      //       operator: FilterOperator.IsGreaterEqual,
+      //     },
+      //     {
+      //       fieldId: config.dateTypeFieldId,
+      //       value: endTime,
+      //       operator: FilterOperator.IsLess,
+      //     }]
+      // }
+    };
+    return dataRangeItem;
+  });
+  const dataConditionList: IDataCondition[] = dataRangeList.map(item => {
+    const dataConditionItem: IDataCondition = {
+      tableId: config.tableId,
+      dataRange: item,
+      series: [{
         fieldId: config.numberOrCurrencyFieldId,
         rollup: config.statisticalCalcType
-      }
-    ],
-  }
-  return dataCondition;
+      }],
+    };
+    return dataConditionItem;
+  })
+  return dataConditionList;
 }
 
-export const getPreviewData = async (previewConfig: IDataCondition) => {
+export const getPreviewData = async (previewConfig: IDataCondition[]) => {
   console.log('previewConfig', previewConfig);
   const data = await dashboard.getPreviewData(previewConfig);
   console.log('>>>>>>>>>>>>>>', data);
@@ -347,9 +369,7 @@ export const getPreviewData = async (previewConfig: IDataCondition) => {
 }
 
 export const getData = async () => {
-  console.log('getData');
   const data = await dashboard.getData();
-  console.log('>>>>>>>>>>>>>>', data);
   return data[1].map(item => item.value as number);
 }
 
@@ -379,6 +399,6 @@ export const getRenderData = async (configObj: IConfig, value: number[]) => {
 }
 
 export const renderMainContentData = async (config: IConfig, value: number[], setRenderData: (data: IRenderData) => void) => {
-  const data = await getRenderData(config, [23603.12345, 110]);
+  const data = await getRenderData(config, [2303.12, 110]);
   setRenderData(data);
 }
