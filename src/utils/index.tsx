@@ -315,7 +315,12 @@ export const getConfig = async () => {
 
 
 export const configFormatter = (config: IConfig) => {
-  const formatterList = [{ dateRange: config.dateRange }, ...config.momOrYoy]
+  const formatterList = [
+    {
+      dateRange: config.dateRange
+    },
+    ...config.momOrYoy
+  ]
   const dataRangeList: IDataRange[] = formatterList.map((item, index) => {
     let startTime: number, endTime: number;
     if (index === 0) {
@@ -347,14 +352,15 @@ export const configFormatter = (config: IConfig) => {
     };
     return dataRangeItem;
   });
+  const seriesArr = [{
+    fieldId: config.numberOrCurrencyFieldId,
+    rollup: config.statisticalCalcType
+  }];
   const dataConditionList: IDataCondition[] = dataRangeList.map(item => {
     const dataConditionItem: IDataCondition = {
       tableId: config.tableId,
       dataRange: item,
-      series: [{
-        fieldId: config.numberOrCurrencyFieldId,
-        rollup: config.statisticalCalcType
-      }],
+      series: config.statisticalType === 'number' ? seriesArr : 'COUNTA',
     };
     return dataConditionItem;
   })
