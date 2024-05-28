@@ -1,10 +1,8 @@
 import './index.scss'
 import classnames from 'classnames';
-import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Input, Select, InputNumber } from '@douyinfe/semi-ui';
 import { ColorPicker } from '../ColorPicker';
-import type { ColorName } from '../ColorPicker';
 import { IConfig } from '@/common/type';
 import { dataFormatList, iconStyleList, } from '@/common/constant';
 import { getIcon } from '@/utils';
@@ -14,61 +12,23 @@ export default function PanelCustomStyle({ config, setConfig }: { config: IConfi
 
   const { t } = useTranslation();
 
-  const colorChange = (color: ColorName) => {
-    setConfig({
-      ...config,
-      color,
-    })
-  }
-
-  const iconStyleChange = (iconStyleId: any) => {
-    setConfig({
-      ...config,
-      iconStyleId,
-    })
+  const handleChange = (key: string, value: any) => {
+    setConfig({ ...config, [key]: value });
   }
 
   const formatterToNumber = (value: any) => {
-    return `${value}`.replace(/\D/g, '')
-  }
-
-  const decimalChange = (decimal: any) => {
-    setConfig({
-      ...config,
-      decimal,
-    })
-  }
-
-  const numberFormatChange = (numberFormat: any) => {
-    setConfig({
-      ...config,
-      numberFormat,
-    })
-  }
-
-  const prefixChange = (prefix: any) => {
-    setConfig({
-      ...config,
-      prefix,
-    })
-  }
-
-  const suffixChange = (suffix: any) => {
-    setConfig({
-      ...config,
-      suffix,
-    })
+    return `${value}`.replace(/\D/g, '');
   }
 
   return (
     <div className="form-main">
       <div className="form-title">{t('color')}</div>
       <div className='form-item' style={{ margin: '6px 0 18px 0' }}>
-        <ColorPicker onChange={colorChange} name={config.color} />
+        <ColorPicker onChange={(value) => { handleChange('color', value) }} name={config.color} />
       </div>
       <div className='form-title'>{t('iconStyle')}</div>
       <div className='form-item'>
-        <Select value={config.iconStyleId} onChange={iconStyleChange}>
+        <Select value={config.iconStyleId} onChange={(value) => { handleChange('iconStyleId', value) }}>
           {iconStyleList.map((item) =>
           (<Select.Option value={item.id} key={item.id}>
             <div className='index-icon'>
@@ -97,11 +57,14 @@ export default function PanelCustomStyle({ config, setConfig }: { config: IConfi
             style={{ marginRight: '10px', flex: 1 }}
             value={config.decimal}
             formatter={formatterToNumber}
-            onNumberChange={number => decimalChange(number)}
+            onNumberChange={(value) => { handleChange('decimal', value) }}
             min={0}
             max={5}
           />
-          <Select value={config.numberFormat} style={{ flex: 1 }} onChange={numberFormatChange}>
+          <Select
+            value={config.numberFormat}
+            style={{ flex: 1 }}
+            onChange={(value) => { handleChange('numberFormat', value) }}>
             {dataFormatList.map((item) =>
               (<Select.Option value={item.value} key={item.value}>{item.label}</Select.Option>))
             }
@@ -111,11 +74,17 @@ export default function PanelCustomStyle({ config, setConfig }: { config: IConfi
       <div className='flex-between'>
         <div className='form-item' style={{ marginRight: '10px' }}>
           <div className='form-subTitle'>{t('prefix')}</div>
-          <Input value={config.prefix} placeholder={t('prefixPlaceholder')} onChange={prefixChange} />
+          <Input
+            value={config.prefix}
+            placeholder={t('prefixPlaceholder')}
+            onChange={(value) => { handleChange('prefix', value) }} />
         </div>
         <div className='form-item'>
           <div className='form-subTitle'>{t('suffix')}</div>
-          <Input value={config.suffix} placeholder={t('suffixPlaceholder')} onChange={suffixChange} />
+          <Input
+            value={config.suffix}
+            placeholder={t('suffixPlaceholder')}
+            onChange={(value) => { handleChange('suffix', value) }} />
         </div>
       </div>
     </div>

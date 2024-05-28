@@ -1,6 +1,6 @@
-import { DashboardState, bitable, dashboard, base } from "@lark-base-open/js-sdk";
+import { bitable, dashboard } from "@lark-base-open/js-sdk";
 import { useLayoutEffect, useEffect } from "react";
-import { IConfig, ITableItem } from '@/common/type';
+import { IConfig } from '@/common/type';
 
 function updateTheme(theme: string) {
   document.body.setAttribute('theme-mode', theme);
@@ -10,11 +10,11 @@ function updateTheme(theme: string) {
 export function useTheme() {
   useLayoutEffect(() => {
     bitable.bridge.getTheme().then((theme: string) => {
-      updateTheme(theme.toLocaleLowerCase())
+      updateTheme(theme.toLocaleLowerCase());
     })
 
     bitable.bridge.onThemeChange((e) => {
-      updateTheme(e.data.theme.toLocaleLowerCase())
+      updateTheme(e.data.theme.toLocaleLowerCase());
     })
   }, [])
 }

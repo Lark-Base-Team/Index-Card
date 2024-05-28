@@ -42,17 +42,12 @@ export default function App() {
                 renderMainContentData(config, value, setRenderData);
             })
         }
-    }, [])
+    }, []);
 
     return (
-        <main className={classnames({
-            'top-border': isConfig,
-            'main': true,
-        })}>
+        <main className={classnames(isConfig ? 'top-border' : '', 'main')}>
             <MainContent renderData={renderData} />
-            {
-                isConfig && <MainConfigPanel setRenderData={setRenderData} />
-            }
+            {isConfig && <MainConfigPanel setRenderData={setRenderData} />}
         </main>
     )
 }

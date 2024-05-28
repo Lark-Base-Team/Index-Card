@@ -1,40 +1,35 @@
 import './index.scss'
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Input, Select } from '@douyinfe/semi-ui';
-import { IconPlus, IconDelete } from '@douyinfe/semi-icons';
+import Icon, { IconPlus, IconDeleteStroked } from '@douyinfe/semi-icons';
 import { SourceType } from "@lark-base-open/js-sdk";
-import type { IView, IDataRange, ViewDataRange, ICategory } from '@lark-base-open/js-sdk';
+import type { IDataRange, ViewDataRange, ICategory } from '@lark-base-open/js-sdk';
 import { Divider } from '@douyinfe/semi-ui';
-import { IConfig, ITableItem, MomOrYoy } from '@/common/type';
+import { IConfig, ITableItem, MomOrYoy, Mutable } from '@/common/type';
 import { calculationList, dateRangeList, momOrYoyCalcTypeList, statisticalTypeList } from '@/common/constant';
 import { getMomYoyDesc, getNewMomOrYoyCalcMethodList } from '@/utils';
-
-type Mutable<T> = {
-  -readonly [P in keyof T]: T[P];
-};
+import IconTable from '@/assets/icon_table.svg?react';
+import IconNumber from '@/assets/icon_number.svg?react';
+import IconCalendar from '@/assets/icon_calendar.svg?react';
+import IconCalendarChat from '@/assets/icon_calendar_chat.svg?react';
 
 interface IProps {
   config: IConfig;
   setConfig: (data: IConfig) => void;
   tableList: ITableItem[];
   tableRangeList: IDataRange[];
-  getTableRange: (tableId: string) => Promise<IDataRange[]>;
-  setTableRangeList: (data: IDataRange[]) => void;
   dateTypeList: ICategory[];
-  setDateTypeList: (data: ICategory[]) => void;
-  getCategories: (tableId: string) => Promise<{ dateTypeList: ICategory[]; numberOrCurrencyList: ICategory[]; }>;
   numberOrCurrencyList: ICategory[];
-  setNumberOrCurrencyList: (data: ICategory[]) => void;
   resetData: (config: IConfig) => void;
 }
 
-export default function PanelTypeAndData({ config, setConfig, tableList, tableRangeList, getTableRange, setTableRangeList, dateTypeList, setDateTypeList, getCategories, numberOrCurrencyList, setNumberOrCurrencyList, resetData }: IProps) {
+export default function PanelTypeAndData({ config, setConfig, tableList, tableRangeList, dateTypeList, numberOrCurrencyList, resetData }: IProps) {
   const { t } = useTranslation();
 
   const defaultViewId = config.tableRange.type === SourceType.ALL ? 'ALL' : config.tableRange.viewId;
   const [tableRangeViewId, setTableRangeViewId] = useState<string>(defaultViewId);
-  const [newMomOrYoyCalcMethodList, setNewMomOrYoyCalcMethodList] = useState(getNewMomOrYoyCalcMethodList(config.dateRange))
+  const [newMomOrYoyCalcMethodList, setNewMomOrYoyCalcMethodList] = useState(getNewMomOrYoyCalcMethodList(config.dateRange));
 
   const tableChange = async (tableId: any) => {
     config.tableId = tableId;
@@ -51,60 +46,36 @@ export default function PanelTypeAndData({ config, setConfig, tableList, tableRa
     } else {
       tableRange = tableRangeList.find((item) => (item as ViewDataRange).viewId === tableRangeViewId) as IDataRange;
     }
-    setConfig({ ...config, tableRange, })
+    setConfig({ ...config, tableRange, });
   }
 
-  const dateTypeChange = (dateTypeFieldId: any) => {
-    setConfig({ ...config, dateTypeFieldId })
+  const handleChange = (key: string, value: any) => {
+    setConfig({ ...config, [key]: value });
   }
 
   const dateRangeChange = (dateRange: any) => {
     setNewMomOrYoyCalcMethodList(getNewMomOrYoyCalcMethodList(dateRange));
     const momOrYoy = config.momOrYoy.map((item) => {
-      item.momOrYoyCalcMethod = 'mom'
+      item.momOrYoyCalcMethod = 'mom';
       return item;
     })
     setConfig({ ...config, dateRange, momOrYoy });
   }
 
-  const statisticalTypeChange = (statisticalType: any) => {
-    setConfig({ ...config, statisticalType })
-  }
-
-  const statisticalCalcTypeChange = (statisticalCalcType: any) => {
-    setConfig({ ...config, statisticalCalcType })
-  }
-
-  const numberOrCurrencyFieldIdChange = (numberOrCurrencyFieldId: any) => {
-    setConfig({ ...config, numberOrCurrencyFieldId, })
-  }
-
-  const momOrYoyDescChange = (momOrYoyItem: MomOrYoy, momOrYoyDesc: any, index: number) => {
-    momOrYoyItem.momOrYoyDesc = momOrYoyDesc;
-    momOrYoyItem.manualSetDesc = true;
-    config.momOrYoy[index] = momOrYoyItem;
-    setConfig({ ...config })
-  }
-
-  const momOrYoyCalcMethodChange = (momOrYoyItem: MomOrYoy, momOrYoyCalcMethod: any, index: number) => {
-    momOrYoyItem.momOrYoyCalcMethod = momOrYoyCalcMethod;
-    if (!momOrYoyItem.manualSetDesc) {
-      momOrYoyItem.momOrYoyDesc = getMomYoyDesc(momOrYoyCalcMethod, momOrYoyItem.momOrYoyCalcType)
+  const momOrYoyItemChange = (item: MomOrYoy, key: string, value: any, index: number) => {
+    item = { ...item, [key]: value };
+    if (key === 'momOrYoyDesc') {
+      item.manualSetDesc = true;
     }
-    config.momOrYoy[index] = momOrYoyItem
-    setConfig({ ...config })
-  }
-
-  const momOrYoyCalcTypeChange = (momOrYoyItem: MomOrYoy, momOrYoyCalcType: any, index: number) => {
-    momOrYoyItem.momOrYoyCalcType = momOrYoyCalcType;
-    if (!momOrYoyItem.manualSetDesc) {
-      momOrYoyItem.momOrYoyDesc = getMomYoyDesc(momOrYoyItem.momOrYoyCalcMethod, momOrYoyCalcType)
+    const { manualSetDesc, momOrYoyCalcMethod, momOrYoyCalcType } = item;
+    if (!manualSetDesc) {
+      item.momOrYoyDesc = getMomYoyDesc(momOrYoyCalcMethod, momOrYoyCalcType);
     }
-    config.momOrYoy[index] = momOrYoyItem
-    setConfig({ ...config })
+    config.momOrYoy[index] = item;
+    setConfig({ ...config });
   }
 
-  const scrollToBottomRef = useRef<HTMLDivElement>(null)
+  const scrollToBottomRef = useRef<HTMLDivElement>(null);
   const addMomOrYoyItem = () => {
     const item: MomOrYoy = {
       momOrYoyDesc: t('momGrowthRate'),
@@ -121,22 +92,22 @@ export default function PanelTypeAndData({ config, setConfig, tableList, tableRa
 
   const deleteMomOrYoyItem = (index: number) => {
     config.momOrYoy.splice(index, 1);
-    setConfig({ ...config })
+    setConfig({ ...config });
   }
 
   return (
     <div className="form-main">
       <div className="form-title">{t('dataSource')}</div>
       <div className='form-item'>
-        <Select value={config.tableId} onChange={tableChange}>
-          {tableList.map((item) =>
-            (<Select.Option value={item.id} key={item.id}>{item.label}</Select.Option>))
-          }
+        <Select
+          prefix={<Icon svg={<IconTable />} />}
+          optionList={tableList as Mutable<typeof tableList>}
+          value={config.tableId} onChange={tableChange}>
         </Select>
       </div>
       <div className="form-title">{t('dataRange')}</div>
       <div className='form-item'>
-        <Select value={tableRangeViewId} onChange={tableRangeChange}>
+        <Select prefix={<Icon svg={<IconTable />} />} value={tableRangeViewId} onChange={tableRangeChange}>
           {
             tableRangeList.map(item => {
               let newItem = { ...item } as ViewDataRange;
@@ -153,41 +124,48 @@ export default function PanelTypeAndData({ config, setConfig, tableList, tableRa
       <div className="form-title">{t('dateFiltering')}</div>
       <div className='form-item'>
         <div className='form-subTitle'>{t('basis')}</div>
-        <Select value={config.dateTypeFieldId} onChange={dateTypeChange} placeholder={t('dataPlaceholder')}>
+        <Select
+          placeholder={t('dataPlaceholder')}
+          prefix={<Icon svg={<IconCalendar />} />}
+          value={config.dateTypeFieldId}
+          onChange={(value) => { handleChange('dateTypeFieldId', value) }}>
           {dateTypeList.map((item) =>
             (<Select.Option value={item.fieldId} key={item.fieldId}>{item.fieldName}</Select.Option>))
           }
         </Select>
         <div className='form-item'>
           <div className='form-subTitle'>{t('range')}</div>
-          <Select value={config.dateRange} onChange={dateRangeChange}>
-            {dateRangeList.map((item) =>
-              (<Select.Option value={item.value} key={item.value}>{item.label}</Select.Option>))
-            }
+          <Select
+            optionList={dateRangeList as Mutable<typeof dateRangeList>}
+            prefix={<Icon svg={<IconCalendarChat />} />}
+            value={config.dateRange} onChange={dateRangeChange}>
           </Select>
         </div>
       </div>
       <div className="form-title">{t('statisticalMethods')}</div>
       <div className='form-item'>
-        <Select value={config.statisticalType} onChange={statisticalTypeChange}>
-          {statisticalTypeList.map((item) =>
-            (<Select.Option value={item.value} key={item.value}>{item.label}</Select.Option>))
-          }
+        <Select
+          optionList={statisticalTypeList as Mutable<typeof statisticalTypeList>}
+          value={config.statisticalType}
+          onChange={(value) => { handleChange('statisticalType', value) }}>
         </Select>
       </div>
       {config.statisticalType === 'number' && (
         <>
-          <div className='form-item'>
-            <Select value={config.numberOrCurrencyFieldId} onChange={numberOrCurrencyFieldIdChange}>
-              {numberOrCurrencyList.map((item) =>
-                (<Select.Option value={item.fieldId} key={item.fieldId}>{item.fieldName}</Select.Option>))
-              }
+          <div className='form-item noBorder'>
+            <Select
+              optionList={calculationList as Mutable<typeof calculationList>}
+              value={config.statisticalCalcType}
+              onChange={(value) => handleChange('statisticalCalcType', value)}>
             </Select>
           </div>
           <div className='form-item'>
-            <Select value={config.statisticalCalcType} onChange={statisticalCalcTypeChange}>
-              {calculationList.map((item) =>
-                (<Select.Option value={item.value} key={item.value}>{item.label}</Select.Option>))
+            <Select
+              prefix={<Icon svg={<IconNumber />} />}
+              value={config.numberOrCurrencyFieldId}
+              onChange={(value) => { handleChange('numberOrCurrencyFieldId', value) }}>
+              {numberOrCurrencyList.map((item) =>
+                (<Select.Option value={item.fieldId} key={item.fieldId}>{item.fieldName}</Select.Option>))
               }
             </Select>
           </div>
@@ -210,22 +188,26 @@ export default function PanelTypeAndData({ config, setConfig, tableList, tableRa
           <div className='form-item bg-grey' key={index}>
             {config.momOrYoy.length > 1 && (
               <div className='icon-delete' onClick={() => { deleteMomOrYoyItem(index) }}>
-                <IconDelete size='small' />
+                <IconDeleteStroked size='small' />
               </div>
             )}
             <div className='form-subTitle'>{t('description')}</div>
-            <Input value={item.momOrYoyDesc} onChange={(momOrYoyDesc) => { momOrYoyDescChange(item, momOrYoyDesc, index) }} />
+            <Input
+              value={item.momOrYoyDesc}
+              onChange={(value) => { momOrYoyItemChange(item, 'momOrYoyDesc', value, index) }} />
             <div className='form-subTitle'>{t('calculation')}</div>
             <Select
+              position='top'
               optionList={newMomOrYoyCalcMethodList as Mutable<typeof newMomOrYoyCalcMethodList>}
               value={item.momOrYoyCalcMethod}
-              onChange={(momOrYoyCalcMethod) => momOrYoyCalcMethodChange(item, momOrYoyCalcMethod, index)}>
+              onChange={(value) => momOrYoyItemChange(item, 'momOrYoyCalcMethod', value, index)}>
             </Select>
             <div className='form-subTitle'>{t('calculationType')}</div>
-            <Select value={item.momOrYoyCalcType} onChange={(momOrYoyCalcType) => { momOrYoyCalcTypeChange(item, momOrYoyCalcType, index) }}>
-              {momOrYoyCalcTypeList.map((item) =>
-                (<Select.Option value={item.value} key={item.value}>{item.label}</Select.Option>))
-              }
+            <Select
+              position='top'
+              optionList={momOrYoyCalcTypeList as Mutable<typeof momOrYoyCalcTypeList>}
+              value={item.momOrYoyCalcType}
+              onChange={(value) => momOrYoyItemChange(item, 'momOrYoyCalcType', value, index)}>
             </Select>
             <div ref={scrollToBottomRef}></div>
           </div>

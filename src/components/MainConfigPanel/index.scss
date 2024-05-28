@@ -78,6 +78,16 @@
     cursor: pointer;
     color: var(--ccm-chart-N1000);
   }
+  &.noBorder{
+    align-items: flex-end;
+    .semi-select{
+      border: none;
+      width: 90px;
+      .semi-select-selection{
+        justify-content: flex-end;
+      }
+    }
+  }
   .semi-select{
     width: 100%;
     background-color: transparent;

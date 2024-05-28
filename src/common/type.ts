@@ -1,4 +1,3 @@
-import { FieldType } from "@lark-base-open/js-sdk";
 import type { IDataRange, Rollup, FilterDuration } from '@lark-base-open/js-sdk';
 import type { ColorName } from '@/components/ColorPicker';
 import { statisticalTypeList, momOrYoyCalcMethodList, momOrYoyCalcTypeList, iconStyleList, dataFormatList, icons } from '@/common/constant';
@@ -9,7 +8,7 @@ export interface IMomYoyList {
   desc: string;
   value: string;
   color: IconColor;
-  calcType: MomOrYoyCalcType
+  calcType: MomOrYoyCalcType;
   icon: keyof typeof icons;
 }
 
@@ -18,7 +17,7 @@ export interface IRenderData {
   value: string; // 指标数据
   prefix: string; // 前缀 
   suffix: string; // 前缀
-  momYoyList: IMomYoyList[], // 环同比数据
+  momYoyList: IMomYoyList[]; // 环同比数据
 }
 
 export type StatisticalType = typeof statisticalTypeList[number]['value'];
@@ -68,9 +67,16 @@ export interface IConfig {
 }
 
 export interface ITableItem {
-  id: string;
+  value: string;
   label: string;
 }
 
 type ExcludeKeys = FilterDuration.Tomorrow | FilterDuration.TheNextWeek | FilterDuration.TheNextMonth;
 export type DateRangeType = Exclude<FilterDuration, ExcludeKeys> | MyFilterDuration;
+
+/**
+ * 把只读的数据变成可写的
+*/
+export type Mutable<T> = {
+  -readonly [P in keyof T]: T[P];
+};

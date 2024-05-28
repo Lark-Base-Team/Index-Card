@@ -38,24 +38,15 @@ export const colors = [
 export type ColorName = typeof colors[number]['name'];
 
 export function ColorPicker(props: { onChange: (name: ColorName) => void, name: ColorName }) {
-
-
   return <div className="color-picker">
     {colors.map(({ name, value }) => <div
       onClick={() => { props.onChange(name) }}
       key={name}
-      style={{
-        borderColor: props.name === name ? value : 'transparent'
-      }}
+      style={{ borderColor: props.name === name ? value : 'transparent' }}
       className="color-picker-color-container">
-      <div style={{
-        backgroundColor: value
-      }} className="color-picker-color">
-
+      <div style={{ backgroundColor: value }} className="color-picker-color">
         {props.name === name ? <div className="selected-icon-container"></div> : null}
-
       </div>
-
     </div>)}
   </div>
 

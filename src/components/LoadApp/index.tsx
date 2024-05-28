@@ -17,7 +17,7 @@ export default function LoadApp(props: { neverShowBanner?: boolean, children: Re
     if (props.neverShowBanner) return;
     const timer = new Promise((resolve, reject) => {
       setTimeout(() => {
-        reject(false)
+        reject(false);
       }, 3000)
     })
     Promise.race([bitable.bridge.getLanguage(), timer]).then((v) => {
@@ -32,11 +32,11 @@ export default function LoadApp(props: { neverShowBanner?: boolean, children: Re
     }).catch((e) => {
       console.error(e);
     })
-  }, [])
+  }, []);
 
 
   if (props.neverShowBanner) {
-    return props.children || null
+    return props.children || null;
   }
 
   return <div>
