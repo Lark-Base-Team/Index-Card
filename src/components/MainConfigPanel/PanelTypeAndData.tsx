@@ -180,7 +180,7 @@ export default function PanelTypeAndData({ config, setConfig, tableList, tableRa
           icon={<IconPlus size='small' />}
           style={{ fontWeight: 'normal' }}
           onClick={addMomOrYoyItem}>
-          添加环同比
+          {t('addMom_Yoy')}
         </Button>
       </div>
       {
