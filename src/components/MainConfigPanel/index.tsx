@@ -37,11 +37,12 @@ export default function MainConfigPanel({ setRenderData }: { setRenderData: (dat
       Toast.error(t('dataPlaceholder'));
       return;
     }
-    console.log(configFormatter(config));
-    // dashboard.saveConfig({
-    //   customConfig: config,
-    //   dataConditions: configFormatter(config),
-    // } as any);
+    // 目前只持存保存一份查询配置
+    const dataCondition = configFormatter(config)[0];
+    dashboard.saveConfig({
+      customConfig: config,
+      dataConditions: dataCondition,
+    } as any);
   }
 
   const [tableList, setTableList] = useState<ITableItem[]>([]);
@@ -77,20 +78,22 @@ export default function MainConfigPanel({ setRenderData }: { setRenderData: (dat
     };
   }, []);
 
-  const resetData = async (config: IConfig) => {
-    const rangeList = await getTableRange(config.tableId);
+  /**
+   * 当tableID变化后，需要根据config的配置重新设置所有依赖数据
+  */
+  const setData = async (configObj: IConfig, tableIdChange: boolean = true) => {
+    const rangeList = await getTableRange(configObj.tableId);
     setTableRangeList(rangeList);
-    const { dateTypeList, numberOrCurrencyList } = await getCategories(config.tableId);
+    const { dateTypeList, numberOrCurrencyList } = await getCategories(configObj.tableId);
     setDateTypeList(dateTypeList);
     setNumberOrCurrencyList(numberOrCurrencyList);
-    config.dateTypeFieldId = dateTypeList[0].fieldId || '';
-    if (numberOrCurrencyList.length > 0) {
-      config.statisticalType = 'number';
-      config.numberOrCurrencyFieldId = numberOrCurrencyList[0].fieldId;
-    } else {
-      config.statisticalType = 'total';
+    configObj.dateTypeFieldId = dateTypeList[0].fieldId || '';
+    if (tableIdChange) {
+      const isChange = numberOrCurrencyList.length > 0;
+      configObj.statisticalType = isChange ? 'number' : 'total';
+      isChange && (configObj.numberOrCurrencyFieldId = numberOrCurrencyList[0].fieldId);
     }
-    setConfig({ ...config });
+    setConfig({ ...configObj });
   }
 
   const initData = async () => {
@@ -101,11 +104,12 @@ export default function MainConfigPanel({ setRenderData }: { setRenderData: (dat
       // 创建状态，无任务配置
       configObj = { ...config };
       configObj.tableId = tableList[0]?.value;
+      setData(configObj);
     } else {
       // config 初始化获取配置
       configObj = await getConfig();
+      setData(configObj, false);
     }
-    resetData(configObj);
   }
 
   useEffect(() => {
@@ -114,13 +118,11 @@ export default function MainConfigPanel({ setRenderData }: { setRenderData: (dat
 
   const renderMain = async () => {
     if (config.tableId) {
-      const dataConditionList = configFormatter(config);
-      console.log(dataConditionList, 'dataConditionList');
-      const value = await getPreviewData(dataConditionList);
+      const value = await getPreviewData(config);
       renderMainContentData(config, value, setRenderData);
     }
   }
-  const renderMainDebounce = debounce(renderMain, 500)
+  const renderMainDebounce = debounce(renderMain, 200);
 
   // 每次配置变化，重新获取指标数据
   useEffect(() => {
@@ -141,7 +143,7 @@ export default function MainConfigPanel({ setRenderData }: { setRenderData: (dat
                   tableRangeList={tableRangeList}
                   dateTypeList={dateTypeList}
                   numberOrCurrencyList={numberOrCurrencyList}
-                  resetData={resetData}
+                  setData={setData}
                 />
               )}
               {item.key === '2' && <PanelCustomStyle config={config} setConfig={setConfig} />}

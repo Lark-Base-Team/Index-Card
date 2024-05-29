@@ -10,7 +10,7 @@ import MainConfigPanel from './components/MainConfigPanel';
 import { useState } from 'react';
 import type { IRenderData } from '@/common/type';
 import { useEffect } from 'react';
-import { getConfig, getData, renderMainContentData } from './utils';
+import { getConfig, getPreviewData, renderMainContentData } from './utils';
 
 export default function App() {
     useTheme();
@@ -28,7 +28,7 @@ export default function App() {
 
     const renderMain = async () => {
         const config = await getConfig();
-        const value = await getData();
+        const value = await getPreviewData(config);
         renderMainContentData(config, value, setRenderData);
     }
 
@@ -37,9 +37,7 @@ export default function App() {
         if (dashboard.state === DashboardState.View) {
             renderMain();
             dashboard.onDataChange(async (data) => {
-                const config = await getConfig();
-                const value = data.data[1].map(item => item.value as number);
-                renderMainContentData(config, value, setRenderData);
+                renderMain()
             })
         }
     }, []);

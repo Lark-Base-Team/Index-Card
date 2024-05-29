@@ -21,10 +21,10 @@ interface IProps {
   tableRangeList: IDataRange[];
   dateTypeList: ICategory[];
   numberOrCurrencyList: ICategory[];
-  resetData: (config: IConfig) => void;
+  setData: (config: IConfig) => void;
 }
 
-export default function PanelTypeAndData({ config, setConfig, tableList, tableRangeList, dateTypeList, numberOrCurrencyList, resetData }: IProps) {
+export default function PanelTypeAndData({ config, setConfig, tableList, tableRangeList, dateTypeList, numberOrCurrencyList, setData }: IProps) {
   const { t } = useTranslation();
 
   const defaultViewId = config.tableRange.type === SourceType.ALL ? 'ALL' : config.tableRange.viewId;
@@ -35,7 +35,7 @@ export default function PanelTypeAndData({ config, setConfig, tableList, tableRa
     config.tableId = tableId;
     config.tableRange = { type: SourceType.ALL };
     setTableRangeViewId('ALL');
-    resetData(config);
+    setData(config);
   }
 
   const tableRangeChange = async (viewId: any) => {

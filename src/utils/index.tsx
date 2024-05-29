@@ -1,5 +1,5 @@
 import { iconStyleList, icons, momOrYoyCalcMethodList } from '@/common/constant';
-import { DashboardState, FilterConjunction, FilterDuration, FilterOperator, IDataCondition, IDataRange, dashboard } from "@lark-base-open/js-sdk";
+import { FilterConjunction, FilterDuration, FilterOperator, IDataCondition, IDataRange, dashboard } from "@lark-base-open/js-sdk";
 import { DateRangeType, IConfig, IMomYoyList, IRenderData, IconColor, IconStyleId, MomOrYoy, MomOrYoyCalcMethod, MomOrYoyCalcType, MyFilterDuration, NumberFormat } from '@/common/type'
 import dayjs from 'dayjs';
 import quarterOfYear from 'dayjs/plugin/quarterOfYear'
@@ -18,17 +18,21 @@ export const getIcon = (iconName: string, iconSize?: string) => {
   return iconSize ? <Icon style={{ fontSize: iconSize }} /> : <Icon size='small' />;
 }
 
-export const indexNumberFormatter = (index: number, formatterType: NumberFormat, decimal: number) => {
+
+/**
+ * 计算环同比指标的展示结果
+*/
+export const indexNumberFormatter = (indexValue: number, formatterType: NumberFormat, decimal: number) => {
   if (formatterType === 'numberMillennials') { //数字千分位
-    const indexStringArr = index.toFixed(decimal).split('.');
+    const indexStringArr = indexValue.toFixed(decimal).split('.');
     const str1 = numberToMillennials(indexStringArr[0]);
     return indexStringArr.length > 1 ? `${str1}.${indexStringArr[1]}` : str1;
   } else if (formatterType === 'number') { //数字
-    return index.toFixed(decimal);
+    return indexValue.toFixed(decimal);
   } else if (formatterType === 'percentage') { //数字百分比
-    return (index * 100).toFixed(decimal) + '%';
+    return (indexValue * 100).toFixed(decimal) + '%';
   } else { //数字千分比
-    return (index * 1000).toFixed(decimal) + '‰';
+    return (indexValue * 1000).toFixed(decimal) + '‰';
   }
 }
 
@@ -274,39 +278,6 @@ export const getIconStyleObj = (iconStyleId: IconStyleId, nowValue: number, targ
   return result;
 }
 
-/**
- * 根据环同比的指标获取对应的指标计算结果
-*/
-export const getMomYoyCalcResult = (calcType: MomOrYoyCalcType, nowValue: number, targetValue: number) => {
-  let result = '';
-  if (calcType === 'differenceRate') { // 差异率
-    result = `${((Math.abs((nowValue - targetValue) / targetValue)) * 100).toFixed(0)}%`;
-  } else if (calcType === 'differenceValue') { // 差异值
-    result = `${nowValue - targetValue}`;
-  } else { // 原始值
-    result = `${nowValue}`;
-  }
-  return result;
-}
-
-/**
- * 根据环同比的指标获取对应的指标描述
-*/
-export const getMomYoyDesc = (calcMethod: MomOrYoyCalcMethod, calcType: MomOrYoyCalcType) => {
-  let methodStringObj = {
-    mom: t('mom'),
-    yoyByWeek: t('weekYoy'),
-    yoyByMonth: t('monthYoy'),
-    yoyByYear: t('yearYoy'),
-  };
-  let typeStringObj = {
-    differenceRate: t('growthRate'),
-    differenceValue: t('growthValue'),
-    originalValue: t('originalValue'),
-  };
-  return `${methodStringObj[calcMethod]}${typeStringObj[calcType]}`
-}
-
 export const getConfig = async () => {
   const res = await dashboard.getConfig();
   const config = res.customConfig as unknown as IConfig;
@@ -314,6 +285,9 @@ export const getConfig = async () => {
 }
 
 
+/**
+ * 把配置转换成SDK接口参数
+*/
 export const configFormatter = (config: IConfig) => {
   const formatterList = [
     {
@@ -367,16 +341,58 @@ export const configFormatter = (config: IConfig) => {
   return dataConditionList;
 }
 
-export const getPreviewData = async (previewConfig: IDataCondition[]) => {
-  console.log('previewConfig', previewConfig);
-  const data = await dashboard.getPreviewData(previewConfig);
-  console.log('>>>>>>>>>>>>>>', data);
-  return data[1].map(item => item.value as number);
+/**
+ * 现阶段接口只支持单个查询条件，需要手动拼接成多次调用接口模拟批量查询
+*/
+export const getPreviewData = async (config: IConfig) => {
+  const dataConditionList = configFormatter(config);
+  const result: number[] = [];
+  for (const item of dataConditionList) {
+    const data = await dashboard.getPreviewData(item);
+    const resultItem = data[1]?.map(item => item.value as number);
+    result.push(resultItem?.length ? resultItem[0] : 0);
+  }
+  return result;
 }
 
 export const getData = async () => {
   const data = await dashboard.getData();
-  return data[1].map(item => item.value as number);
+  return data[1]?.map(item => item.value as number);
+}
+
+/**
+ * 根据环同比的指标获取对应的指标计算结果
+*/
+export const getMomYoyCalcResult = (calcType: MomOrYoyCalcType, nowValue: number, targetValue: number) => {
+  let result = '';
+  if (calcType === 'differenceRate') { // 差异率
+    const value = ((Math.abs((nowValue - targetValue) / targetValue)) * 100);
+    result = targetValue === 0 ? `${value.toFixed(0)}%` : ``;
+  } else if (calcType === 'differenceValue') { // 差异值
+    const value = Math.abs((nowValue - targetValue));
+    result = value ? `${value}` : '';
+  } else { // 原始值
+    result = `${targetValue}`;
+  }
+  return result;
+}
+
+/**
+ * 根据环同比的指标获取对应的指标描述
+*/
+export const getMomYoyDesc = (calcMethod: MomOrYoyCalcMethod, calcType: MomOrYoyCalcType) => {
+  let methodStringObj = {
+    mom: t('mom'),
+    yoyByWeek: t('weekYoy'),
+    yoyByMonth: t('monthYoy'),
+    yoyByYear: t('yearYoy'),
+  };
+  let typeStringObj = {
+    differenceRate: t('growthRate'),
+    differenceValue: t('growthValue'),
+    originalValue: t('originalValue'),
+  };
+  return `${methodStringObj[calcMethod]}${typeStringObj[calcType]}`
 }
 
 export const getRenderData = async (configObj: IConfig, value: number[]) => {
@@ -405,6 +421,9 @@ export const getRenderData = async (configObj: IConfig, value: number[]) => {
 }
 
 export const renderMainContentData = async (config: IConfig, value: number[], setRenderData: (data: IRenderData) => void) => {
-  const data = await getRenderData(config, [2303.12, 110]);
+  if (value.length < 1) {
+    return
+  }
+  const data = await getRenderData(config, value);
   setRenderData(data);
 }

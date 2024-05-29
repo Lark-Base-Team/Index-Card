@@ -27,7 +27,9 @@ export default function MainContent({ renderData }: { renderData: IRenderData })
               <div className="description-text">{item.desc}</div>
               <div className={classnames('description-index', item.color)}>
                 {item.calcType === 'originalValue' ? null : getIcon(item.icon, iconSize)}
-                <div className='description-index-number'>{item.value}</div>
+                <div className={classnames('description-index-number', item.value ? '' : 'no-margin-left')}>
+                  {item.value}
+                </div>
               </div>
             </div>
           ))
