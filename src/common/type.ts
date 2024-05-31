@@ -1,4 +1,4 @@
-import type { IDataRange, Rollup, FilterDuration } from '@lark-base-open/js-sdk';
+import type { IDataRange, Rollup, FilterDuration, FieldType } from '@lark-base-open/js-sdk';
 import type { ColorName } from '@/components/ColorPicker';
 import { statisticalTypeList, momOrYoyCalcMethodList, momOrYoyCalcTypeList, iconStyleList, dataFormatList, icons } from '@/common/constant';
 
@@ -49,10 +49,12 @@ export enum MyFilterDuration {
   /** 最近6个月 */
   Last6Months = 'Last6Months',
 }
+export type DateTypeFieldType = FieldType.DateTime | FieldType.CreatedTime | FieldType.ModifiedTime;
 export interface IConfig {
   tableId: string; // 数据源
   tableRange: IDataRange; //数据范围
   dateTypeFieldId: string; // 日期类型字段的Id
+  dateTypeFieldType: DateTypeFieldType; // 日期类型字段的type
   dateRange: DateRangeType; // 日期范围
   statisticalType: StatisticalType; // 统计方式
   numberOrCurrencyFieldId: string; // 统计数值字段类型

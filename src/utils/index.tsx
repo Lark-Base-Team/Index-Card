@@ -309,20 +309,22 @@ export const configFormatter = (config: IConfig) => {
     }
     const dataRangeItem: IDataRange = {
       ...config.tableRange,
-      // filterInfo: {
-      //   conjunction: FilterConjunction.And,
-      //   conditions: [
-      //     {
-      //       fieldId: config.dateTypeFieldId,
-      //       value: startTime,
-      //       operator: FilterOperator.IsGreaterEqual,
-      //     },
-      //     {
-      //       fieldId: config.dateTypeFieldId,
-      //       value: endTime,
-      //       operator: FilterOperator.IsLess,
-      //     }]
-      // }
+      filterInfo: {
+        conjunction: FilterConjunction.And,
+        conditions: [
+          {
+            fieldId: config.dateTypeFieldId,
+            value: startTime,
+            fieldType: config.dateTypeFieldType,
+            operator: FilterOperator.IsGreater,
+          },
+          {
+            fieldId: config.dateTypeFieldId,
+            value: endTime,
+            fieldType: config.dateTypeFieldType,
+            operator: FilterOperator.IsLess,
+          }]
+      }
     };
     return dataRangeItem;
   });
@@ -352,6 +354,7 @@ export const getPreviewData = async (config: IConfig) => {
     const resultItem = data[1]?.map(item => item.value as number);
     result.push(resultItem?.length ? resultItem[0] : 0);
   }
+  console.log(result, 'result');
   return result;
 }
 
@@ -367,7 +370,7 @@ export const getMomYoyCalcResult = (calcType: MomOrYoyCalcType, nowValue: number
   let result = '';
   if (calcType === 'differenceRate') { // 差异率
     const value = ((Math.abs((nowValue - targetValue) / targetValue)) * 100);
-    result = targetValue === 0 ? `${value.toFixed(0)}%` : ``;
+    result = targetValue !== 0 ? `${value.toFixed(0)}%` : ``;
   } else if (calcType === 'differenceValue') { // 差异值
     const value = Math.abs((nowValue - targetValue));
     result = value ? `${value}` : '';

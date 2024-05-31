@@ -1,5 +1,5 @@
 import { IconMinus, IconTriangleUp, IconTriangleDown, IconFilledArrowUp, IconFilledArrowDown, IconArrowUpRight, IconArrowDownRight } from '@douyinfe/semi-icons';
-import { FilterDuration, SourceType, Rollup } from "@lark-base-open/js-sdk";
+import { FilterDuration, SourceType, Rollup, FieldType } from "@lark-base-open/js-sdk";
 import { t } from 'i18next';
 import type { IConfig } from '@/common/type'
 import { MyFilterDuration } from '@/common/type'
@@ -229,6 +229,7 @@ export const defaultConfig: IConfig = {
   tableId: '',
   tableRange: { type: SourceType.ALL },
   dateTypeFieldId: '',
+  dateTypeFieldType: FieldType.DateTime,
   dateRange: FilterDuration.Today,
   statisticalType: 'total',
   numberOrCurrencyFieldId: '',
