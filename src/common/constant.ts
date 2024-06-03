@@ -246,6 +246,6 @@ export const defaultConfig: IConfig = {
   iconStyleId: '1',
   decimal: 0,
   numberFormat: 'number',
-  prefix: '$',
+  prefix: '',
   suffix: '',
 }
