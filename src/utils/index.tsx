@@ -1,6 +1,6 @@
 import { iconStyleList, icons, momOrYoyCalcMethodList } from '@/common/constant';
 import { FilterConjunction, FilterDuration, FilterOperator, IDataCondition, IDataRange, dashboard } from "@lark-base-open/js-sdk";
-import { DateRangeType, IConfig, IMomYoyList, IRenderData, IconColor, IconStyleId, MomOrYoy, MomOrYoyCalcMethod, MomOrYoyCalcType, MyFilterDuration, NumberFormat } from '@/common/type'
+import { DateRangeType, IConfig, IMomYoyList, IRenderData, IconColor, IconStyleId, MomOrYoy, MomOrYoyCalcMethod, MomOrYoyCalcType, MyFilterDurationEnum, NumberFormat } from '@/common/type'
 import dayjs from 'dayjs';
 import quarterOfYear from 'dayjs/plugin/quarterOfYear'
 import { t } from 'i18next';
@@ -47,7 +47,7 @@ export const getNewMomOrYoyCalcMethodList = (dateRange: DateRangeType) => {
   }
 
   // 只有环比可用
-  const onlyMomAvailable = [FilterDuration.CurrentWeek, FilterDuration.LastWeek, FilterDuration.TheLastWeek, MyFilterDuration.Last14Days, FilterDuration.TheLastMonth, MyFilterDuration.Last365Days, MyFilterDuration.Last3Months, MyFilterDuration.Last6Months];
+  const onlyMomAvailable = [FilterDuration.CurrentWeek, FilterDuration.LastWeek, FilterDuration.TheLastWeek, MyFilterDurationEnum.Last14Days, FilterDuration.TheLastMonth, MyFilterDurationEnum.Last365Days, MyFilterDurationEnum.Last3Months, MyFilterDurationEnum.Last6Months];
   if (onlyMomAvailable.includes(dateRange)) {
     return momOrYoyCalcMethodList.map(item => ({
       ...item,
@@ -56,7 +56,7 @@ export const getNewMomOrYoyCalcMethodList = (dateRange: DateRangeType) => {
   }
 
   // 环比、年同比可用
-  const momAndYoyByYearAvailable = [MyFilterDuration.CurrentQuarter, MyFilterDuration.LastQuarter, MyFilterDuration.CurrentYear, MyFilterDuration.LastYear] as any[];
+  const momAndYoyByYearAvailable = [MyFilterDurationEnum.CurrentQuarter, MyFilterDurationEnum.LastQuarter, MyFilterDurationEnum.CurrentYear, MyFilterDurationEnum.LastYear] as any[];
   if (momAndYoyByYearAvailable.includes(dateRange)) {
     return momOrYoyCalcMethodList.map(item => ({
       ...item,
@@ -117,22 +117,22 @@ export const getDateRangeTimestamp = (dateTypeRange: DateRangeType) => {
       const endTime = dayjs().endOf('month').subtract(1, 'month').valueOf();
       return { startTime, endTime };
     },
-    [MyFilterDuration.CurrentQuarter]: () => {
+    [MyFilterDurationEnum.CurrentQuarter]: () => {
       const startTime = dayjs().startOf('quarter').valueOf();
       const endTime = dayjs().valueOf();
       return { startTime, endTime };
     },
-    [MyFilterDuration.LastQuarter]: () => {
+    [MyFilterDurationEnum.LastQuarter]: () => {
       const startTime = dayjs().startOf('quarter').subtract(1, 'quarter').valueOf();
       const endTime = dayjs().endOf('quarter').subtract(1, 'quarter').valueOf();
       return { startTime, endTime };
     },
-    [MyFilterDuration.CurrentYear]: () => {
+    [MyFilterDurationEnum.CurrentYear]: () => {
       const startTime = dayjs().startOf('year').valueOf();
       const endTime = dayjs().valueOf();
       return { startTime, endTime };
     },
-    [MyFilterDuration.LastYear]: () => {
+    [MyFilterDurationEnum.LastYear]: () => {
       const startTime = dayjs().startOf('year').subtract(1, 'year').valueOf();
       const endTime = dayjs().endOf('year').subtract(1, 'year').valueOf();
       return { startTime, endTime };
@@ -142,7 +142,7 @@ export const getDateRangeTimestamp = (dateTypeRange: DateRangeType) => {
       const endTime = dayjs().valueOf();
       return { startTime, endTime };
     },
-    [MyFilterDuration.Last14Days]: () => {
+    [MyFilterDurationEnum.Last14Days]: () => {
       const startTime = dayjs().subtract(14, 'day').valueOf();
       const endTime = dayjs().valueOf();
       return { startTime, endTime };
@@ -152,17 +152,17 @@ export const getDateRangeTimestamp = (dateTypeRange: DateRangeType) => {
       const endTime = dayjs().valueOf();
       return { startTime, endTime };
     },
-    [MyFilterDuration.Last365Days]: () => {
+    [MyFilterDurationEnum.Last365Days]: () => {
       const startTime = dayjs().subtract(365, 'day').valueOf();
       const endTime = dayjs().valueOf();
       return { startTime, endTime };
     },
-    [MyFilterDuration.Last3Months]: () => {
+    [MyFilterDurationEnum.Last3Months]: () => {
       const startTime = dayjs().subtract(3, 'month').valueOf();
       const endTime = dayjs().valueOf();
       return { startTime, endTime };
     },
-    [MyFilterDuration.Last6Months]: () => {
+    [MyFilterDurationEnum.Last6Months]: () => {
       const startTime = dayjs().subtract(6, 'month').valueOf();
       const endTime = dayjs().valueOf();
       return { startTime, endTime };
@@ -176,26 +176,26 @@ export const getDateRangeTimestamp = (dateTypeRange: DateRangeType) => {
 */
 export const getSubtractParamsValue = (dateTypeRange: DateRangeType) => {
   let value = 1;
-  const valueBy1 = [FilterDuration.Today, FilterDuration.Yesterday, FilterDuration.CurrentWeek, FilterDuration.LastWeek, FilterDuration.CurrentMonth, FilterDuration.LastMonth, MyFilterDuration.CurrentQuarter, MyFilterDuration.LastQuarter, MyFilterDuration.CurrentYear, MyFilterDuration.LastYear];
+  const valueBy1 = [FilterDuration.Today, FilterDuration.Yesterday, FilterDuration.CurrentWeek, FilterDuration.LastWeek, FilterDuration.CurrentMonth, FilterDuration.LastMonth, MyFilterDurationEnum.CurrentQuarter, MyFilterDurationEnum.LastQuarter, MyFilterDurationEnum.CurrentYear, MyFilterDurationEnum.LastYear];
   if (valueBy1.includes(dateTypeRange)) {
     value = 1;
   }
   if (dateTypeRange === FilterDuration.TheLastWeek) {
     value = 7;
   }
-  if (dateTypeRange === MyFilterDuration.Last14Days) {
+  if (dateTypeRange === MyFilterDurationEnum.Last14Days) {
     value = 14;
   }
   if (dateTypeRange === FilterDuration.TheLastMonth) {
     value = 30;
   }
-  if (dateTypeRange === MyFilterDuration.Last365Days) {
+  if (dateTypeRange === MyFilterDurationEnum.Last365Days) {
     value = 365;
   }
-  if (dateTypeRange === MyFilterDuration.Last3Months) {
+  if (dateTypeRange === MyFilterDurationEnum.Last3Months) {
     value = 3;
   }
-  if (dateTypeRange === MyFilterDuration.Last6Months) {
+  if (dateTypeRange === MyFilterDurationEnum.Last6Months) {
     value = 6;
   }
   return value;
@@ -208,7 +208,7 @@ export const getSubtractParamsUnit = (dateTypeRange: DateRangeType, momYoyCalcMe
   type Unit = 'day' | 'week' | 'month' | 'quarter' | 'year';
   let unit: Unit = 'day';
 
-  const arr1 = [FilterDuration.Today, FilterDuration.Yesterday, FilterDuration.TheLastWeek, MyFilterDuration.Last14Days, FilterDuration.TheLastMonth, MyFilterDuration.Last365Days];
+  const arr1 = [FilterDuration.Today, FilterDuration.Yesterday, FilterDuration.TheLastWeek, MyFilterDurationEnum.Last14Days, FilterDuration.TheLastMonth, MyFilterDurationEnum.Last365Days];
   if (arr1.includes(dateTypeRange) && momYoyCalcMethod === 'mom') {
     unit = 'day';
   }
@@ -219,19 +219,19 @@ export const getSubtractParamsUnit = (dateTypeRange: DateRangeType, momYoyCalcMe
     unit = 'week';
   }
 
-  const arr4 = [FilterDuration.CurrentMonth, FilterDuration.LastMonth, MyFilterDuration.Last3Months, MyFilterDuration.Last6Months];
+  const arr4 = [FilterDuration.CurrentMonth, FilterDuration.LastMonth, MyFilterDurationEnum.Last3Months, MyFilterDurationEnum.Last6Months];
   const arr5 = [FilterDuration.Today, FilterDuration.Yesterday, FilterDuration.CurrentMonth, FilterDuration.LastMonth];
   if ((arr4.includes(dateTypeRange) && momYoyCalcMethod === 'mom') || (arr5.includes(dateTypeRange as any) && momYoyCalcMethod === 'yoyByMonth')) {
     unit = 'month';
   }
 
-  const arr6 = [MyFilterDuration.CurrentQuarter, MyFilterDuration.LastQuarter];
+  const arr6 = [MyFilterDurationEnum.CurrentQuarter, MyFilterDurationEnum.LastQuarter];
   if (arr6.includes(dateTypeRange as any) && momYoyCalcMethod === 'mom') {
     unit = 'quarter';
   }
 
-  const arr7 = [MyFilterDuration.CurrentYear, MyFilterDuration.LastYear];
-  const arr8 = [FilterDuration.Today, FilterDuration.Yesterday, FilterDuration.CurrentMonth, FilterDuration.LastMonth, MyFilterDuration.CurrentQuarter, MyFilterDuration.LastQuarter, MyFilterDuration.CurrentYear, MyFilterDuration.LastYear];
+  const arr7 = [MyFilterDurationEnum.CurrentYear, MyFilterDurationEnum.LastYear];
+  const arr8 = [FilterDuration.Today, FilterDuration.Yesterday, FilterDuration.CurrentMonth, FilterDuration.LastMonth, MyFilterDurationEnum.CurrentQuarter, MyFilterDurationEnum.LastQuarter, MyFilterDurationEnum.CurrentYear, MyFilterDurationEnum.LastYear];
   if ((arr7.includes(dateTypeRange as any) && momYoyCalcMethod === 'mom') || (arr8.includes(dateTypeRange as any) && momYoyCalcMethod === 'yoyByYear')) {
     unit = 'year';
   }
@@ -254,7 +254,7 @@ export const getMomYoyDateRange = (dateTypeRange: DateRangeType, momYoyCalcMetho
 /**
  * 根据环同比的指标获取对应的图标和颜色
 */
-export const getIconStyleObj = (iconStyleId: IconStyleId, nowValue: number, targetValue: number) => {
+export const getIconStyleObj = (iconStyleId: IconStyleId, calcType: MomOrYoyCalcType, nowValue: number, targetValue: number) => {
   type Result = {
     icon: keyof typeof icons;
     color: IconColor;
@@ -263,7 +263,7 @@ export const getIconStyleObj = (iconStyleId: IconStyleId, nowValue: number, targ
   type IconStyleItem = typeof iconStyleList[number];
   const iconObj = iconStyleList.find((item) => item.id === iconStyleId) as IconStyleItem;
 
-  if (nowValue === targetValue) {
+  if ((targetValue === 0 && calcType === 'differenceRate') || nowValue === targetValue) {
     result.icon = iconObj.constIcon;
     result.color = iconObj.constIconColor;
   }
@@ -274,6 +274,23 @@ export const getIconStyleObj = (iconStyleId: IconStyleId, nowValue: number, targ
   else {
     result.icon = iconObj.upIcon;
     result.color = iconObj.upIconColor;
+  }
+  return result;
+}
+
+/**
+ * 根据环同比的指标获取对应的指标计算结果
+*/
+export const getMomYoyCalcResult = (calcType: MomOrYoyCalcType, nowValue: number, targetValue: number) => {
+  let result = '';
+  if (calcType === 'differenceRate') { // 差异率
+    const value = ((Math.abs((nowValue - targetValue) / targetValue)) * 100);
+    result = targetValue !== 0 ? `${value.toFixed(0)}%` : ``;
+  } else if (calcType === 'differenceValue') { // 差异值
+    const value = Math.abs((nowValue - targetValue));
+    result = value ? `${value}` : '';
+  } else { // 原始值
+    result = `${targetValue}`;
   }
   return result;
 }
@@ -354,30 +371,12 @@ export const getPreviewData = async (config: IConfig) => {
     const resultItem = data[1]?.map(item => item.value as number);
     result.push(resultItem?.length ? resultItem[0] : 0);
   }
-  console.log(result, 'result');
   return result;
 }
 
 export const getData = async () => {
   const data = await dashboard.getData();
   return data[1]?.map(item => item.value as number);
-}
-
-/**
- * 根据环同比的指标获取对应的指标计算结果
-*/
-export const getMomYoyCalcResult = (calcType: MomOrYoyCalcType, nowValue: number, targetValue: number) => {
-  let result = '';
-  if (calcType === 'differenceRate') { // 差异率
-    const value = ((Math.abs((nowValue - targetValue) / targetValue)) * 100);
-    result = targetValue !== 0 ? `${value.toFixed(0)}%` : ``;
-  } else if (calcType === 'differenceValue') { // 差异值
-    const value = Math.abs((nowValue - targetValue));
-    result = value ? `${value}` : '';
-  } else { // 原始值
-    result = `${targetValue}`;
-  }
-  return result;
 }
 
 /**
@@ -403,7 +402,7 @@ export const getRenderData = async (configObj: IConfig, value: number[]) => {
   const momYoyListNumber = value.splice(1, value.length - 1);
   const momYoyList: IMomYoyList[] = configObj.momOrYoy.map((item, index) => {
     const targetValue = momYoyListNumber[index];
-    const iconStyleObj = getIconStyleObj(configObj.iconStyleId, renderDataNumber, targetValue)
+    const iconStyleObj = getIconStyleObj(configObj.iconStyleId, item.momOrYoyCalcType, renderDataNumber, targetValue)
     return {
       desc: item.momOrYoyDesc,
       calcType: item.momOrYoyCalcType,

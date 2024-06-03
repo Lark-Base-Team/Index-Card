@@ -16,14 +16,14 @@ export default function MainContent({ renderData }: { renderData: IRenderData })
         'main-content-warp': true,
         'is-config': isConfig,
       })}>
-        <div className='main-content-number' style={{ color: colors.find(item => item.name === renderData.color)?.value }}>
+        <div className='main-content-number text-hidden' style={{ color: colors.find(item => item.name === renderData.color)?.value }}>
           <span>{renderData.prefix}</span>
           <span>{renderData.value}</span>
           <span>{renderData.suffix}</span>
         </div>
         {
           renderData.momYoyList.map((item, index) => (
-            <div className='main-content-description' key={index}>
+            <div className='main-content-description text-hidden' key={index}>
               <div className="description-text">{item.desc}</div>
               <div className={classnames('description-index', item.color)}>
                 {item.calcType === 'originalValue' ? null : getIcon(item.icon, iconSize)}

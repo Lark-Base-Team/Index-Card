@@ -1,4 +1,4 @@
-import type { IDataRange, Rollup, FilterDuration, FieldType } from '@lark-base-open/js-sdk';
+import { IDataRange, Rollup, FilterDuration, FieldType } from '@lark-base-open/js-sdk';
 import type { ColorName } from '@/components/ColorPicker';
 import { statisticalTypeList, momOrYoyCalcMethodList, momOrYoyCalcTypeList, iconStyleList, dataFormatList, icons } from '@/common/constant';
 
@@ -31,7 +31,7 @@ export type MomOrYoy = {
   momOrYoyCalcMethod: MomOrYoyCalcMethod; // 环比/同比计算方式
   momOrYoyCalcType: MomOrYoyCalcType; // 环比/同比计算类型
 };
-export enum MyFilterDuration {
+export enum MyFilterDurationEnum {
   /** 本季度 */
   CurrentQuarter = 'CurrentQuarter',
   /** 上季度 */
@@ -49,12 +49,12 @@ export enum MyFilterDuration {
   /** 最近6个月 */
   Last6Months = 'Last6Months',
 }
-export type DateTypeFieldType = FieldType.DateTime | FieldType.CreatedTime | FieldType.ModifiedTime;
+export type DateType = FieldType.DateTime | FieldType.CreatedTime | FieldType.ModifiedTime;
 export interface IConfig {
   tableId: string; // 数据源
   tableRange: IDataRange; //数据范围
   dateTypeFieldId: string; // 日期类型字段的Id
-  dateTypeFieldType: DateTypeFieldType; // 日期类型字段的type
+  dateTypeFieldType: DateType; // 日期类型字段的type
   dateRange: DateRangeType; // 日期范围
   statisticalType: StatisticalType; // 统计方式
   numberOrCurrencyFieldId: string; // 统计数值字段类型
@@ -74,7 +74,7 @@ export interface ITableItem {
 }
 
 type ExcludeKeys = FilterDuration.Tomorrow | FilterDuration.TheNextWeek | FilterDuration.TheNextMonth;
-export type DateRangeType = Exclude<FilterDuration, ExcludeKeys> | MyFilterDuration;
+export type DateRangeType = Exclude<FilterDuration, ExcludeKeys> | MyFilterDurationEnum;
 
 /**
  * 把只读的数据变成可写的

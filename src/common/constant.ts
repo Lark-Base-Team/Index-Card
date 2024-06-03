@@ -2,7 +2,7 @@ import { IconMinus, IconTriangleUp, IconTriangleDown, IconFilledArrowUp, IconFil
 import { FilterDuration, SourceType, Rollup, FieldType } from "@lark-base-open/js-sdk";
 import { t } from 'i18next';
 import type { IConfig } from '@/common/type'
-import { MyFilterDuration } from '@/common/type'
+import { MyFilterDurationEnum } from '@/common/type'
 
 export const dateRangeList = [
   {
@@ -31,19 +31,19 @@ export const dateRangeList = [
   },
   {
     label: t('currentQuarter'),
-    value: MyFilterDuration.CurrentQuarter,
+    value: MyFilterDurationEnum.CurrentQuarter,
   },
   {
     label: t('lastQuarter'),
-    value: MyFilterDuration.LastQuarter,
+    value: MyFilterDurationEnum.LastQuarter,
   },
   {
     label: t('currentYear'),
-    value: MyFilterDuration.CurrentYear,
+    value: MyFilterDurationEnum.CurrentYear,
   },
   {
     label: t('lastYear'),
-    value: MyFilterDuration.LastYear,
+    value: MyFilterDurationEnum.LastYear,
   },
   {
     label: t('last7Days'),
@@ -51,7 +51,7 @@ export const dateRangeList = [
   },
   {
     label: t('last14Days'),
-    value: MyFilterDuration.Last14Days,
+    value: MyFilterDurationEnum.Last14Days,
   },
   {
     label: t('last30Days'),
@@ -59,15 +59,15 @@ export const dateRangeList = [
   },
   {
     label: t('last365Days'),
-    value: MyFilterDuration.Last365Days,
+    value: MyFilterDurationEnum.Last365Days,
   },
   {
     label: t('last3Months'),
-    value: MyFilterDuration.Last3Months,
+    value: MyFilterDurationEnum.Last3Months,
   },
   {
     label: t('last6Months'),
-    value: MyFilterDuration.Last6Months,
+    value: MyFilterDurationEnum.Last6Months,
   },
 ] as const;
 

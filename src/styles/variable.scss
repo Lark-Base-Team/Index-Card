@@ -1,4 +1,10 @@
-.flex-between{
+.flex-between {
   display: flex;
   justify-content: space-between;
+}
+
+.text-hidden {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }

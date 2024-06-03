@@ -6,7 +6,7 @@ import Icon, { IconPlus, IconDeleteStroked } from '@douyinfe/semi-icons';
 import { SourceType } from "@lark-base-open/js-sdk";
 import type { IDataRange, ViewDataRange, ICategory } from '@lark-base-open/js-sdk';
 import { Divider } from '@douyinfe/semi-ui';
-import { DateTypeFieldType, IConfig, ITableItem, MomOrYoy, Mutable } from '@/common/type';
+import { DateType, IConfig, ITableItem, MomOrYoy, Mutable } from '@/common/type';
 import { calculationList, dateRangeList, momOrYoyCalcTypeList, statisticalTypeList } from '@/common/constant';
 import { getMomYoyDesc, getNewMomOrYoyCalcMethodList } from '@/utils';
 import IconTable from '@/assets/icon_table.svg?react';
@@ -51,7 +51,7 @@ export default function PanelTypeAndData({ config, setConfig, tableList, tableRa
 
   const handleChange = (key: string, value: any) => {
     if (key === 'dateTypeFieldId') {
-      const dateTypeFieldType = dateTypeList.find((item) => item.fieldId === value)?.fieldType as unknown as DateTypeFieldType;
+      const dateTypeFieldType = dateTypeList.find((item) => item.fieldId === value)?.fieldType as DateType;
       setConfig({ ...config, [key]: value, dateTypeFieldType });
     }
     setConfig({ ...config, [key]: value });
