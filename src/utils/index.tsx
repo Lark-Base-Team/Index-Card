@@ -89,7 +89,7 @@ export const getDateRangeTimestamp = (dateTypeRange: DateRangeType) => {
   const dateTypeRangeMap: DateTypeRangeMap = {
     [FilterDuration.Today]: () => {
       const startTime = dayjs().startOf('day').valueOf();
-      const endTime = dayjs().valueOf();
+      const endTime = dayjs().endOf('day').valueOf();
       return { startTime, endTime };
     },
     [FilterDuration.Yesterday]: () => {
@@ -99,7 +99,7 @@ export const getDateRangeTimestamp = (dateTypeRange: DateRangeType) => {
     },
     [FilterDuration.CurrentWeek]: () => {
       const startTime = dayjs().startOf('week').valueOf();
-      const endTime = dayjs().valueOf();
+      const endTime = dayjs().endOf('day').valueOf();
       return { startTime, endTime };
     },
     [FilterDuration.LastWeek]: () => {
@@ -109,7 +109,7 @@ export const getDateRangeTimestamp = (dateTypeRange: DateRangeType) => {
     },
     [FilterDuration.CurrentMonth]: () => {
       const startTime = dayjs().startOf('month').valueOf();
-      const endTime = dayjs().valueOf();
+      const endTime = dayjs().endOf('day').valueOf();
       return { startTime, endTime };
     },
     [FilterDuration.LastMonth]: () => {
@@ -119,7 +119,7 @@ export const getDateRangeTimestamp = (dateTypeRange: DateRangeType) => {
     },
     [MyFilterDurationEnum.CurrentQuarter]: () => {
       const startTime = dayjs().startOf('quarter').valueOf();
-      const endTime = dayjs().valueOf();
+      const endTime = dayjs().endOf('day').valueOf();
       return { startTime, endTime };
     },
     [MyFilterDurationEnum.LastQuarter]: () => {
@@ -129,7 +129,7 @@ export const getDateRangeTimestamp = (dateTypeRange: DateRangeType) => {
     },
     [MyFilterDurationEnum.CurrentYear]: () => {
       const startTime = dayjs().startOf('year').valueOf();
-      const endTime = dayjs().valueOf();
+      const endTime = dayjs().endOf('day').valueOf();
       return { startTime, endTime };
     },
     [MyFilterDurationEnum.LastYear]: () => {
@@ -139,32 +139,32 @@ export const getDateRangeTimestamp = (dateTypeRange: DateRangeType) => {
     },
     [FilterDuration.TheLastWeek]: () => {
       const startTime = dayjs().subtract(7, 'day').valueOf();
-      const endTime = dayjs().valueOf();
+      const endTime = dayjs().endOf('day').valueOf();
       return { startTime, endTime };
     },
     [MyFilterDurationEnum.Last14Days]: () => {
       const startTime = dayjs().subtract(14, 'day').valueOf();
-      const endTime = dayjs().valueOf();
+      const endTime = dayjs().endOf('day').valueOf();
       return { startTime, endTime };
     },
     [FilterDuration.TheLastMonth]: () => {
       const startTime = dayjs().subtract(30, 'day').valueOf();
-      const endTime = dayjs().valueOf();
+      const endTime = dayjs().endOf('day').valueOf();
       return { startTime, endTime };
     },
     [MyFilterDurationEnum.Last365Days]: () => {
       const startTime = dayjs().subtract(365, 'day').valueOf();
-      const endTime = dayjs().valueOf();
+      const endTime = dayjs().endOf('day').valueOf();
       return { startTime, endTime };
     },
     [MyFilterDurationEnum.Last3Months]: () => {
       const startTime = dayjs().subtract(3, 'month').valueOf();
-      const endTime = dayjs().valueOf();
+      const endTime = dayjs().endOf('day').valueOf();
       return { startTime, endTime };
     },
     [MyFilterDurationEnum.Last6Months]: () => {
       const startTime = dayjs().subtract(6, 'month').valueOf();
-      const endTime = dayjs().valueOf();
+      const endTime = dayjs().endOf('day').valueOf();
       return { startTime, endTime };
     },
   }
@@ -324,23 +324,24 @@ export const configFormatter = (config: IConfig) => {
       startTime = timeObj.startTime;
       endTime = timeObj.endTime;
     }
+    // 由于接口参数会把传过去的时间格式化成0点0分0秒，需要把结束时间推到后一天的00:00:00
+    endTime = dayjs(endTime).add(1, 'day').startOf('day').valueOf();
     const dataRangeItem: IDataRange = {
       ...config.tableRange,
       filterInfo: {
         conjunction: FilterConjunction.And,
-        conditions: [
-          {
-            fieldId: config.dateTypeFieldId,
-            value: startTime,
-            fieldType: config.dateTypeFieldType,
-            operator: FilterOperator.IsGreater,
-          },
-          {
-            fieldId: config.dateTypeFieldId,
-            value: endTime,
-            fieldType: config.dateTypeFieldType,
-            operator: FilterOperator.IsLess,
-          }]
+        conditions: [{
+          fieldId: config.dateTypeFieldId,
+          value: startTime,
+          fieldType: config.dateTypeFieldType,
+          operator: FilterOperator.IsGreater,
+        },
+        {
+          fieldId: config.dateTypeFieldId,
+          value: endTime,
+          fieldType: config.dateTypeFieldType,
+          operator: FilterOperator.IsLess,
+        }]
       }
     };
     return dataRangeItem;
