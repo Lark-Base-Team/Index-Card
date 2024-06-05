@@ -7,27 +7,20 @@ import { DashboardState, dashboard } from '@lark-base-open/js-sdk';
 
 
 export default function MainContent({ renderData }: { renderData: IRenderData }) {
-  const isConfig = dashboard.state === DashboardState.Config || dashboard.state === DashboardState.Create;
-  const iconSize = isConfig ? '20px' : '10px';
 
   return (
     <div className='main-content'>
-      <div className={classnames({
-        'main-content-warp': true,
-        'is-config': isConfig,
-      })}>
+      <div className='main-content-warp'>
         <div className='main-content-number text-hidden' style={{ color: colors.find(item => item.name === renderData.color)?.value }}>
-          <span>{renderData.prefix}</span>
-          <span>{renderData.value}</span>
-          <span>{renderData.suffix}</span>
+          {`${renderData.prefix}${renderData.value}${renderData.suffix}`}
         </div>
         {
           renderData.momYoyList.map((item, index) => (
             <div className='main-content-description text-hidden' key={index}>
               <div className="description-text">{item.desc}</div>
               <div className={classnames('description-index', item.color)}>
-                {item.calcType === 'originalValue' ? null : getIcon(item.icon, iconSize)}
-                <div className={classnames('description-index-number', item.value ? '' : 'no-margin-left')}>
+                {item.calcType === 'originalValue' ? null : getIcon(item.icon, '1.8vmax')}
+                <div className='description-index-number'>
                   {item.value}
                 </div>
               </div>

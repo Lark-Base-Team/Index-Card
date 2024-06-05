@@ -15,7 +15,9 @@ export const numberToMillennials = (numberString: string) => {
 
 export const getIcon = (iconName: string, iconSize?: string) => {
   const Icon = icons[iconName as keyof typeof icons];
-  return iconSize ? <Icon style={{ fontSize: iconSize }} /> : <Icon size='small' />;
+  const bigIcon = <Icon style={{ fontSize: iconSize, marginRight: '0.8vmax' }} />
+  const smallIcon = <Icon size='small' style={{ marginRight: '0.8vmax' }} />
+  return iconSize ? bigIcon : smallIcon;
 }
 
 

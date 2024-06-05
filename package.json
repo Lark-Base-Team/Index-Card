@@ -14,8 +14,10 @@
   "output": "dist",
   "license": "ISC",
   "dependencies": {
+    "@douyinfe/semi-foundation": "^2.58.0",
     "@douyinfe/semi-ui": "^2.58.0",
     "@lark-base-open/js-sdk": "https://lf3-static.bytednsdoc.com/obj/eden-cn/jjjpceh7nulojvhj/@lark-base-open-js-sdk-0.4.0-alpha.12.tgz",
+    "@semi-bot/semi-theme-feishu-dashboard": "^1.0.4",
     "@semi-bot/semi-theme-universedesign": "^1.0.13",
     "@types/lodash-es": "^4.17.12",
     "@types/react": "^18.3.1",
@@ -32,7 +34,8 @@
     "react-router-dom": "^6.23.1",
     "reset-css": "^5.0.2",
     "typescript": "^5.4.5",
-    "vite": "^5.2.11"
+    "vite": "^5.2.11",
+    "vite-plugin-semi-theming": "^0.1.0"
   },
   "devDependencies": {
     "@types/node": "^20.12.12",
