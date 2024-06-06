@@ -87,8 +87,8 @@ export default function MainConfigPanel({ setRenderData }: { setRenderData: (dat
     const { dateTypeList, numberOrCurrencyList } = await getCategories(configObj.tableId);
     setDateTypeList(dateTypeList);
     setNumberOrCurrencyList(numberOrCurrencyList);
-    configObj.dateTypeFieldId = dateTypeList[0].fieldId || '';
     if (tableIdChange) {
+      configObj.dateTypeFieldId = dateTypeList[0].fieldId || '';
       const isChange = numberOrCurrencyList.length > 0;
       configObj.statisticalType = isChange ? 'number' : 'total';
       isChange && (configObj.numberOrCurrencyFieldId = numberOrCurrencyList[0].fieldId);

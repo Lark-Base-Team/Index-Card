@@ -179,7 +179,7 @@ export default function PanelTypeAndData({ config, setConfig, tableList, tableRa
       <div className="form-title">
         <span>{t('mom_yoy')}</span>
         <Button
-          disabled={config.momOrYoy.length >= 6}
+          disabled={config.momOrYoy.length >= 4}
           theme='borderless'
           icon={<IconPlus size='small' />}
           style={{ fontWeight: 'normal' }}

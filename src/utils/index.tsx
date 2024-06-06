@@ -13,10 +13,10 @@ export const numberToMillennials = (numberString: string) => {
   return numberString.replace(/\B(?=(\d{3})+$)/g, ',');
 }
 
-export const getIcon = (iconName: string, iconSize?: string) => {
+export const getIcon = (iconName: string, iconSize?: string, marginRight = '0.8vmax') => {
   const Icon = icons[iconName as keyof typeof icons];
-  const bigIcon = <Icon style={{ fontSize: iconSize, marginRight: '0.8vmax' }} />
-  const smallIcon = <Icon size='small' style={{ marginRight: '0.8vmax' }} />
+  const bigIcon = <Icon style={{ fontSize: iconSize, marginRight }} />
+  const smallIcon = <Icon size='small' style={{ marginRight }} />
   return iconSize ? bigIcon : smallIcon;
 }
 
@@ -101,7 +101,7 @@ export const getDateRangeTimestamp = (dateTypeRange: DateRangeType) => {
     },
     [FilterDuration.CurrentWeek]: () => {
       const startTime = dayjs().startOf('week').valueOf();
-      const endTime = dayjs().endOf('day').valueOf();
+      const endTime = dayjs().endOf('week').valueOf();
       return { startTime, endTime };
     },
     [FilterDuration.LastWeek]: () => {
@@ -111,7 +111,7 @@ export const getDateRangeTimestamp = (dateTypeRange: DateRangeType) => {
     },
     [FilterDuration.CurrentMonth]: () => {
       const startTime = dayjs().startOf('month').valueOf();
-      const endTime = dayjs().endOf('day').valueOf();
+      const endTime = dayjs().endOf('month').valueOf();
       return { startTime, endTime };
     },
     [FilterDuration.LastMonth]: () => {
@@ -121,7 +121,7 @@ export const getDateRangeTimestamp = (dateTypeRange: DateRangeType) => {
     },
     [MyFilterDurationEnum.CurrentQuarter]: () => {
       const startTime = dayjs().startOf('quarter').valueOf();
-      const endTime = dayjs().endOf('day').valueOf();
+      const endTime = dayjs().endOf('quarter').valueOf();
       return { startTime, endTime };
     },
     [MyFilterDurationEnum.LastQuarter]: () => {
@@ -131,7 +131,7 @@ export const getDateRangeTimestamp = (dateTypeRange: DateRangeType) => {
     },
     [MyFilterDurationEnum.CurrentYear]: () => {
       const startTime = dayjs().startOf('year').valueOf();
-      const endTime = dayjs().endOf('day').valueOf();
+      const endTime = dayjs().endOf('year').valueOf();
       return { startTime, endTime };
     },
     [MyFilterDurationEnum.LastYear]: () => {

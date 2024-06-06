@@ -7,10 +7,11 @@ import { DashboardState, dashboard } from '@lark-base-open/js-sdk';
 
 
 export default function MainContent({ renderData }: { renderData: IRenderData }) {
+  const isConfig = dashboard.state === DashboardState.Config || dashboard.state === DashboardState.Create;
 
   return (
     <div className='main-content'>
-      <div className='main-content-warp'>
+      <div className={classnames({ 'main-content-warp': true, 'is-config': isConfig })}>
         <div className='main-content-number text-hidden' style={{ color: colors.find(item => item.name === renderData.color)?.value }}>
           {`${renderData.prefix}${renderData.value}${renderData.suffix}`}
         </div>
@@ -19,7 +20,7 @@ export default function MainContent({ renderData }: { renderData: IRenderData })
             <div className='main-content-description text-hidden' key={index}>
               <div className="description-text">{item.desc}</div>
               <div className={classnames('description-index', item.color)}>
-                {item.calcType === 'originalValue' ? null : getIcon(item.icon, '1.8vmax')}
+                {item.calcType === 'originalValue' ? null : getIcon(item.icon, '1.8vmax', item.value ? undefined : '0')}
                 <div className='description-index-number'>
                   {item.value}
                 </div>

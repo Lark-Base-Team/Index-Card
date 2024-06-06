@@ -3,7 +3,7 @@ import './index.scss';
 export const colors = [
   {
     name: 'primary', // 基本色
-    value: 'var(--ccm-chart-N1000)',
+    value: 'var(--ccm-chart-N700)',
   },
   {
     name: 'blue', // 蓝色
