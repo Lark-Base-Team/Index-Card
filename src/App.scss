@@ -2,6 +2,7 @@
 
 body[theme-mode="light"] {
     --divider: rgba(31, 35, 41, 0.15);
+    --description-index-bg: rgba(0, 0, 0, 0.1);
     --ccm-chart-B50: #f0f4ff;
     --ccm-chart-B100: #e1eaff;
     --ccm-chart-B200: #bacefd;
@@ -139,6 +140,7 @@ body[theme-mode="light"] {
 
 body[theme-mode="dark"] {
     --divider: rgba(192, 192, 192, 15);
+    --description-index-bg: rgba(255, 255, 255, 0.1);
     --ccm-chart-B50: #151f33;
     --ccm-chart-B100: #192a4c;
     --ccm-chart-B200: #203e78;

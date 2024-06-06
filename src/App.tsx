@@ -34,7 +34,7 @@ export default function App() {
 
     // 展示态
     useEffect(() => {
-        if (dashboard.state === DashboardState.View) {
+        if (dashboard.state === DashboardState.View || dashboard.state === DashboardState.FullScreen) {
             renderMain();
             dashboard.onDataChange(async (data) => {
                 renderMain()
