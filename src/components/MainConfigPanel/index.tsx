@@ -120,29 +120,34 @@ export default function MainConfigPanel({ renderData, setRenderData }: IProps) {
     initData();
   }, [getTableList, getTableRange, getCategories]);
 
-  const renderMain = async () => {
+  // 用于临时存储SDK接口返回的指标数据
+  const [valueArr, setValueArr] = useState<number[]>([]);
+
+  const renderMainDataDebounce = debounce(async () => {
+    if (!config.tableId) {
+      return
+    }
     const value = await getPreviewData(config);
+    setValueArr(value);
     renderMainContentData(config, value, setRenderData);
-  }
-  const renderMainDebounce = debounce(renderMain, 200);
+  }, 200);
 
   // 类型与数据面板变化，依赖base SDK接口的数据计算，重新获取指标数据
   useEffect(() => {
-    if (config.tableId) {
-      return
-    }
-    renderMainDebounce();
+    renderMainDataDebounce();
   }, [config.tableId, config.tableRange, config.dateTypeFieldId, config.dateTypeFieldType, config.dateRange, config.statisticalType, config.numberOrCurrencyFieldId, config.statisticalCalcType, config.momOrYoy]);
 
 
-  // 自定义样式面板变化，重新设置主面板的显示样式与格式
-  useEffect(() => {
-    if (config.tableId) {
+  const renderMainStyleDebounce = debounce(() => {
+    if (!config.tableId) {
       return
     }
-    const value = [renderData.value, ...renderData.momYoyList.map(item => item.value)].map(item => Number(item))
-    renderMainContentData(config, value, setRenderData);
-  }, [config.color, config.iconStyleId, config.decimal, config.numberFormat, config.prefix, config.suffix, config]);
+    renderMainContentData(config, valueArr, setRenderData);
+  }, 200);
+  // 自定义样式面板变化，重新设置主面板的显示样式与格式
+  useEffect(() => {
+    renderMainStyleDebounce();
+  }, [config.color, config.iconStyleId, config.decimal, config.numberFormat, config.prefix, config.suffix]);
 
   return (
     <div className='main-config-panel left-border'>

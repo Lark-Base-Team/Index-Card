@@ -140,32 +140,32 @@ export const getDateRangeTimestamp = (dateTypeRange: DateRangeType) => {
       return { startTime, endTime };
     },
     [FilterDuration.TheLastWeek]: () => {
-      const startTime = dayjs().subtract(7, 'day').valueOf();
+      const startTime = dayjs().endOf('day').subtract(7, 'day').valueOf();
       const endTime = dayjs().endOf('day').valueOf();
       return { startTime, endTime };
     },
     [MyFilterDurationEnum.Last14Days]: () => {
-      const startTime = dayjs().subtract(14, 'day').valueOf();
+      const startTime = dayjs().endOf('day').subtract(14, 'day').valueOf();
       const endTime = dayjs().endOf('day').valueOf();
       return { startTime, endTime };
     },
     [FilterDuration.TheLastMonth]: () => {
-      const startTime = dayjs().subtract(30, 'day').valueOf();
+      const startTime = dayjs().endOf('day').subtract(30, 'day').valueOf();
       const endTime = dayjs().endOf('day').valueOf();
       return { startTime, endTime };
     },
     [MyFilterDurationEnum.Last365Days]: () => {
-      const startTime = dayjs().subtract(365, 'day').valueOf();
+      const startTime = dayjs().endOf('day').subtract(365, 'day').valueOf();
       const endTime = dayjs().endOf('day').valueOf();
       return { startTime, endTime };
     },
     [MyFilterDurationEnum.Last3Months]: () => {
-      const startTime = dayjs().subtract(3, 'month').valueOf();
+      const startTime = dayjs().endOf('day').subtract(3, 'month').valueOf();
       const endTime = dayjs().endOf('day').valueOf();
       return { startTime, endTime };
     },
     [MyFilterDurationEnum.Last6Months]: () => {
-      const startTime = dayjs().subtract(6, 'month').valueOf();
+      const startTime = dayjs().endOf('day').subtract(6, 'month').valueOf();
       const endTime = dayjs().endOf('day').valueOf();
       return { startTime, endTime };
     },
@@ -326,21 +326,20 @@ export const configFormatter = (config: IConfig) => {
       startTime = timeObj.startTime;
       endTime = timeObj.endTime;
     }
-    // 由于接口参数会把传过去的时间格式化成0点0分0秒，需要把结束时间推到后一天的00:00:00
-    endTime = dayjs(endTime).add(1, 'day').startOf('day').valueOf();
+    console.log(dayjs(startTime).format('YYYY-MM-DD HH:mm:ss'), dayjs(endTime).format('YYYY-MM-DD HH:mm:ss'));
     const dataRangeItem: IDataRange = {
       ...config.tableRange,
       filterInfo: {
         conjunction: FilterConjunction.And,
         conditions: [{
           fieldId: config.dateTypeFieldId,
-          value: startTime,
+          value: startTime - 1,// 由于日期过滤不支持大于等于和小于等于 开始和结束时间需要错开1毫秒
           fieldType: config.dateTypeFieldType,
           operator: FilterOperator.IsGreater,
         },
         {
           fieldId: config.dateTypeFieldId,
-          value: endTime,
+          value: endTime + 1,// 由于日期过滤不支持大于等于和小于等于 开始和结束时间需要错开1毫秒
           fieldType: config.dateTypeFieldType,
           operator: FilterOperator.IsLess,
         }]
@@ -402,7 +401,7 @@ export const getMomYoyDesc = (calcMethod: MomOrYoyCalcMethod, calcType: MomOrYoy
 
 export const getRenderData = async (configObj: IConfig, value: number[]) => {
   const renderDataNumber = value[0];
-  const momYoyListNumber = value.splice(1, value.length - 1);
+  const momYoyListNumber = value.slice(1);
   const momYoyList: IMomYoyList[] = configObj.momOrYoy.map((item, index) => {
     const targetValue = momYoyListNumber[index];
     const iconStyleObj = getIconStyleObj(configObj.iconStyleId, item.momOrYoyCalcType, renderDataNumber, targetValue)
@@ -426,7 +425,7 @@ export const getRenderData = async (configObj: IConfig, value: number[]) => {
 }
 
 export const renderMainContentData = async (config: IConfig, value: number[], setRenderData: (data: IRenderData) => void) => {
-  if (value.length < 1) {
+  if (value.filter(item => item !== undefined).length <= 1) {
     return
   }
   const data = await getRenderData(config, value);
