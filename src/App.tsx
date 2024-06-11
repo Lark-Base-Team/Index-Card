@@ -45,7 +45,7 @@ export default function App() {
     return (
         <main className={classnames(isConfig ? 'top-border' : '', 'main')}>
             <MainContent renderData={renderData} />
-            {isConfig && <MainConfigPanel setRenderData={setRenderData} />}
+            {isConfig && <MainConfigPanel renderData={renderData} setRenderData={setRenderData} />}
         </main>
     )
 }

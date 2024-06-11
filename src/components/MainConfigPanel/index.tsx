@@ -13,7 +13,11 @@ import { defaultConfig } from '@/common/constant';
 import { configFormatter, getConfig, getPreviewData, renderMainContentData } from '@/utils';
 import { debounce } from 'lodash-es';
 
-export default function MainConfigPanel({ setRenderData }: { setRenderData: (data: IRenderData) => void }) {
+interface IProps {
+  renderData: IRenderData;
+  setRenderData: (data: IRenderData) => void;
+}
+export default function MainConfigPanel({ renderData, setRenderData }: IProps) {
   const { t } = useTranslation();
   const tabList = [
     {
@@ -117,17 +121,28 @@ export default function MainConfigPanel({ setRenderData }: { setRenderData: (dat
   }, [getTableList, getTableRange, getCategories]);
 
   const renderMain = async () => {
-    if (config.tableId) {
-      const value = await getPreviewData(config);
-      renderMainContentData(config, value, setRenderData);
-    }
+    const value = await getPreviewData(config);
+    renderMainContentData(config, value, setRenderData);
   }
   const renderMainDebounce = debounce(renderMain, 200);
 
-  // 每次配置变化，重新获取指标数据
+  // 类型与数据面板变化，依赖base SDK接口的数据计算，重新获取指标数据
   useEffect(() => {
+    if (config.tableId) {
+      return
+    }
     renderMainDebounce();
-  }, [config]);
+  }, [config.tableId, config.tableRange, config.dateTypeFieldId, config.dateTypeFieldType, config.dateRange, config.statisticalType, config.numberOrCurrencyFieldId, config.statisticalCalcType, config.momOrYoy]);
+
+
+  // 自定义样式面板变化，重新设置主面板的显示样式与格式
+  useEffect(() => {
+    if (config.tableId) {
+      return
+    }
+    const value = [renderData.value, ...renderData.momYoyList.map(item => item.value)].map(item => Number(item))
+    renderMainContentData(config, value, setRenderData);
+  }, [config.color, config.iconStyleId, config.decimal, config.numberFormat, config.prefix, config.suffix, config]);
 
   return (
     <div className='main-config-panel left-border'>
