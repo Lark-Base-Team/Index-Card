@@ -326,20 +326,22 @@ export const configFormatter = (config: IConfig) => {
       startTime = timeObj.startTime;
       endTime = timeObj.endTime;
     }
-    console.log(dayjs(startTime).format('YYYY-MM-DD HH:mm:ss'), dayjs(endTime).format('YYYY-MM-DD HH:mm:ss'));
+    // 由于日期过滤不支持大于等于和小于等于 开始和结束时间需要错开1毫秒
+    startTime = startTime - 1;
+    endTime = endTime + 1;
     const dataRangeItem: IDataRange = {
       ...config.tableRange,
       filterInfo: {
         conjunction: FilterConjunction.And,
         conditions: [{
           fieldId: config.dateTypeFieldId,
-          value: startTime - 1,// 由于日期过滤不支持大于等于和小于等于 开始和结束时间需要错开1毫秒
+          value: startTime,
           fieldType: config.dateTypeFieldType,
           operator: FilterOperator.IsGreater,
         },
         {
           fieldId: config.dateTypeFieldId,
-          value: endTime + 1,// 由于日期过滤不支持大于等于和小于等于 开始和结束时间需要错开1毫秒
+          value: endTime,
           fieldType: config.dateTypeFieldType,
           operator: FilterOperator.IsLess,
         }]
