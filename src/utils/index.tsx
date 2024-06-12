@@ -7,6 +7,11 @@ import { t } from 'i18next';
 dayjs.extend(quarterOfYear); // 季度插件
 
 /**
+ * 延时函数，参数为毫秒
+*/
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+/**
  * 数字字符串转为千分位字符串
 */
 export const numberToMillennials = (numberString: string) => {
@@ -381,9 +386,21 @@ export const getPreviewData = async (config: IConfig) => {
   return result;
 }
 
-export const getData = async () => {
-  const data = await dashboard.getData();
-  return data[1]?.map(item => item.value as number);
+export const getData = async (config: IConfig) => {
+  const dataConditionList = configFormatter(config);
+  const result: number[] = [];
+  for (const item of dataConditionList) {
+    const myConfig = {
+      dataConditions: item,
+      customConfig: config
+    } as any
+    await dashboard.saveConfig(myConfig)
+    await delay(2000)
+    const data = await dashboard.getData();
+    const resultItem = data[1]?.map(item => item.value as number)
+    result.push(resultItem?.length ? resultItem[0] : 0);
+  }
+  return result;
 }
 
 /**

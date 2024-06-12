@@ -12,6 +12,8 @@ import type { IRenderData } from '@/common/type';
 import { useEffect } from 'react';
 import { getConfig, getPreviewData, renderMainContentData } from './utils';
 
+
+
 export default function App() {
     useTheme();
 
@@ -26,19 +28,44 @@ export default function App() {
         momYoyList: [], // 同比、环比
     });
 
+    // 因接口限制，需要手动拼接多次saveConfig和getData会触发多次configChange事件
+    // 又因为configChange事件不是立即触发，需要设置延时，在延时范围内不触发change事件，暂定3000毫秒
+    // let delayedTime = 3000;
+    // let dataChangeFlag = false;
+
+    // const renderMain = async () => {
+    //     const time = new Date().getTime();
+    //     dataChangeFlag = true;
+    //     const config = await getConfig();
+    //     const value = await getData(config);
+    //     renderMainContentData(config, value, setRenderData);
+    //     console.log((new Date().getTime() - time) / 1000);
+    //     setTimeout(() => {
+    //         dataChangeFlag = false;
+    //     }, delayedTime)
+    // }
+
+    // const dataChangeHandle = async () => {
+    //     if (!dataChangeFlag) {
+    //         renderMain()
+    //     }
+    // }
+
     const renderMain = async () => {
         const config = await getConfig();
         const value = await getPreviewData(config);
         renderMainContentData(config, value, setRenderData);
     }
 
+    const dataChangeHandle = async () => {
+        renderMain()
+    }
+
     // 展示态
     useEffect(() => {
         if (dashboard.state === DashboardState.View || dashboard.state === DashboardState.FullScreen) {
             renderMain();
-            dashboard.onDataChange(async (data) => {
-                renderMain()
-            })
+            dashboard.onDataChange(dataChangeHandle);
         }
     }, []);
 
