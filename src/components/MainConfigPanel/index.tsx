@@ -135,7 +135,7 @@ export default function MainConfigPanel({ renderData, setRenderData }: IProps) {
   // 类型与数据面板变化，依赖base SDK接口的数据计算，重新获取指标数据
   useEffect(() => {
     renderMainDataDebounce();
-  }, [config.tableId, config.tableRange, config.dateTypeFieldId, config.dateTypeFieldType, config.dateRange, config.statisticalType, config.numberOrCurrencyFieldId, config.statisticalCalcType, config.momOrYoy]);
+  }, [config.tableId, config.tableRange, config.dateTypeFieldId, config.dateTypeFieldType, config.dateRange, config.statisticalType, config.numberOrCurrencyFieldId, config.statisticalCalcType, JSON.stringify(config.momOrYoy)]);
 
 
   const renderMainStyleDebounce = debounce(() => {
