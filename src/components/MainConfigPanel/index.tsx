@@ -3,21 +3,20 @@ import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Toast } from '@douyinfe/semi-ui';
 import { dashboard, DashboardState, base, SourceType, FieldType } from "@lark-base-open/js-sdk";
-import type { IDataRange, ICategory } from '@lark-base-open/js-sdk';
+import type { IDataRange, ICategory, IDataCondition, ISeries } from '@lark-base-open/js-sdk';
 import { Tabs, TabPane } from '@douyinfe/semi-ui';
 import PanelTypeAndData from './PanelTypeAndData';
 import PanelCustomStyle from './PanelCustomStyle';
-import type { IConfig, IRenderData, ITableItem } from '@/common/type';
+import type { ICustomConfig, IRenderData, ITableItem } from '@/common/type';
 import { useConfig } from '@/hooks';
 import { defaultConfig } from '@/common/constant';
-import { configFormatter, getConfig, getPreviewData, renderMainContentData } from '@/utils';
+import { configFormatter, dataConditionFormatter, getConfig, getPreviewData, renderMainContentData } from '@/utils';
 import { debounce } from 'lodash-es';
 
 interface IProps {
-  renderData: IRenderData;
   setRenderData: (data: IRenderData) => void;
 }
-export default function MainConfigPanel({ renderData, setRenderData }: IProps) {
+export default function MainConfigPanel({ setRenderData }: IProps) {
   const { t } = useTranslation();
   const tabList = [
     {
@@ -31,7 +30,7 @@ export default function MainConfigPanel({ renderData, setRenderData }: IProps) {
   ];
 
   // create时的默认配置
-  const [config, setConfig] = useState<IConfig>(defaultConfig);
+  const [config, setConfig] = useState<ICustomConfig>(defaultConfig);
 
   useConfig(setConfig);
 
@@ -42,10 +41,10 @@ export default function MainConfigPanel({ renderData, setRenderData }: IProps) {
       return;
     }
     // 目前只持存保存一份查询配置
-    const dataCondition = configFormatter(config)[0];
+    const myDataCondition = configFormatter(config)[0];
     dashboard.saveConfig({
       customConfig: config,
-      dataConditions: dataCondition,
+      dataConditions: myDataCondition,
     } as any);
   }
 
@@ -85,34 +84,34 @@ export default function MainConfigPanel({ renderData, setRenderData }: IProps) {
   /**
    * 当tableID变化后，需要根据config的配置重新设置所有依赖数据
   */
-  const setData = async (configObj: IConfig, tableIdChange: boolean = true) => {
-    const rangeList = await getTableRange(configObj.tableId);
+  const setData = async (customConfig: ICustomConfig, tableIdChange: boolean = true) => {
+    const rangeList = await getTableRange(customConfig.tableId);
     setTableRangeList(rangeList);
-    const { dateTypeList, numberOrCurrencyList } = await getCategories(configObj.tableId);
+    const { dateTypeList, numberOrCurrencyList } = await getCategories(customConfig.tableId);
     setDateTypeList(dateTypeList);
     setNumberOrCurrencyList(numberOrCurrencyList);
     if (tableIdChange) {
-      configObj.dateTypeFieldId = dateTypeList[0].fieldId || '';
+      customConfig.dateTypeFieldId = dateTypeList[0].fieldId || '';
       const isChange = numberOrCurrencyList.length > 0;
-      configObj.statisticalType = isChange ? 'number' : 'total';
-      isChange && (configObj.numberOrCurrencyFieldId = numberOrCurrencyList[0].fieldId);
+      customConfig.statisticalType = isChange ? 'number' : 'total';
+      isChange && (customConfig.numberOrCurrencyFieldId = numberOrCurrencyList[0].fieldId);
     }
-    setConfig({ ...configObj });
+    setConfig({ ...customConfig });
   }
 
   const initData = async () => {
     const tableList = await getTableList();
     setTableList(tableList);
-    let configObj = {} as IConfig;
     if (dashboard.state === DashboardState.Create) {
       // 创建状态，无任务配置
-      configObj = { ...config };
-      configObj.tableId = tableList[0]?.value;
-      setData(configObj);
+      const customConfig = { ...config };
+      customConfig.tableId = tableList[0]?.value;
+      setData(customConfig);
     } else {
       // config 初始化获取配置
-      configObj = await getConfig();
-      setData(configObj, false);
+      const { dataCondition, customConfig } = await getConfig();
+      const newCustomConfig = dataConditionFormatter(dataCondition, customConfig);
+      setData(newCustomConfig, false);
     }
   }
 

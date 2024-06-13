@@ -50,7 +50,7 @@ export enum MyFilterDurationEnum {
   Last6Months = 'Last6Months',
 }
 export type DateType = FieldType.DateTime | FieldType.CreatedTime | FieldType.ModifiedTime;
-export interface IConfig {
+export interface ICustomConfig {
   tableId: string; // 数据源
   tableRange: IDataRange; //数据范围
   dateTypeFieldId: string; // 日期类型字段的Id

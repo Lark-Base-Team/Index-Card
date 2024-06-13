@@ -3,12 +3,12 @@ import classnames from 'classnames';
 import { useTranslation } from 'react-i18next';
 import { Input, Select, InputNumber } from '@douyinfe/semi-ui';
 import { ColorPicker } from '../ColorPicker';
-import { IConfig } from '@/common/type';
+import { ICustomConfig } from '@/common/type';
 import { dataFormatList, iconStyleList, } from '@/common/constant';
 import { getIcon } from '@/utils';
 import { IconMinus } from '@douyinfe/semi-icons';
 
-export default function PanelCustomStyle({ config, setConfig }: { config: IConfig; setConfig: (data: IConfig) => void }) {
+export default function PanelCustomStyle({ config, setConfig }: { config: ICustomConfig; setConfig: (data: ICustomConfig) => void }) {
 
   const { t } = useTranslation();
 

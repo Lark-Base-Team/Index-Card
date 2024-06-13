@@ -1,6 +1,6 @@
 import { iconStyleList, icons, momOrYoyCalcMethodList } from '@/common/constant';
-import { FilterConjunction, FilterDuration, FilterOperator, IDataCondition, IDataRange, dashboard } from "@lark-base-open/js-sdk";
-import { DateRangeType, IConfig, IMomYoyList, IRenderData, IconColor, IconStyleId, MomOrYoy, MomOrYoyCalcMethod, MomOrYoyCalcType, MyFilterDurationEnum, NumberFormat } from '@/common/type'
+import { FilterConjunction, FilterDuration, FilterOperator, IDataCondition, IDataRange, ISeries, dashboard } from "@lark-base-open/js-sdk";
+import { DateRangeType, ICustomConfig, IMomYoyList, IRenderData, IconColor, IconStyleId, MomOrYoy, MomOrYoyCalcMethod, MomOrYoyCalcType, MyFilterDurationEnum, NumberFormat } from '@/common/type'
 import dayjs from 'dayjs';
 import quarterOfYear from 'dayjs/plugin/quarterOfYear'
 import { t } from 'i18next';
@@ -304,30 +304,31 @@ export const getMomYoyCalcResult = (calcType: MomOrYoyCalcType, nowValue: number
 
 export const getConfig = async () => {
   const res = await dashboard.getConfig();
-  const config = res.customConfig as unknown as IConfig;
-  return config;
+  const dataCondition = res.dataConditions[0]
+  const customConfig = res.customConfig as unknown as ICustomConfig;
+  return { dataCondition, customConfig };
 }
 
 
 /**
- * 把配置转换成SDK接口参数
+ * 把自定义配置转换成SDK接口参数
 */
-export const configFormatter = (config: IConfig) => {
+export const configFormatter = (customConfig: ICustomConfig) => {
   const formatterList = [
     {
-      dateRange: config.dateRange
+      dateRange: customConfig.dateRange
     },
-    ...config.momOrYoy
+    ...customConfig.momOrYoy
   ]
   const dataRangeList: IDataRange[] = formatterList.map((item, index) => {
     let startTime: number, endTime: number;
     if (index === 0) {
-      const timeObj = getDateRangeTimestamp(config.dateRange);
+      const timeObj = getDateRangeTimestamp(customConfig.dateRange);
       startTime = timeObj.startTime;
       endTime = timeObj.endTime;
     } else {
       const newItem = { ...item } as MomOrYoy
-      const timeObj = getMomYoyDateRange(config.dateRange, newItem.momOrYoyCalcMethod)
+      const timeObj = getMomYoyDateRange(customConfig.dateRange, newItem.momOrYoyCalcMethod)
       startTime = timeObj.startTime;
       endTime = timeObj.endTime;
     }
@@ -338,19 +339,19 @@ export const configFormatter = (config: IConfig) => {
     // 由于接口参数会把传过去的时间格式化成0点0分0秒，需要把结束时间推到后一天的00:00:00
     endTime = dayjs(endTime).add(1, 'day').startOf('day').valueOf();
     const dataRangeItem: IDataRange = {
-      ...config.tableRange,
+      ...customConfig.tableRange,
       filterInfo: {
         conjunction: FilterConjunction.And,
         conditions: [{
-          fieldId: config.dateTypeFieldId,
+          fieldId: customConfig.dateTypeFieldId,
           value: startTime,
-          fieldType: config.dateTypeFieldType,
+          fieldType: customConfig.dateTypeFieldType,
           operator: FilterOperator.IsGreater,
         },
         {
-          fieldId: config.dateTypeFieldId,
+          fieldId: customConfig.dateTypeFieldId,
           value: endTime,
-          fieldType: config.dateTypeFieldType,
+          fieldType: customConfig.dateTypeFieldType,
           operator: FilterOperator.IsLess,
         }]
       }
@@ -358,14 +359,14 @@ export const configFormatter = (config: IConfig) => {
     return dataRangeItem;
   });
   const seriesArr = [{
-    fieldId: config.numberOrCurrencyFieldId,
-    rollup: config.statisticalCalcType
+    fieldId: customConfig.numberOrCurrencyFieldId,
+    rollup: customConfig.statisticalCalcType
   }];
   const dataConditionList: IDataCondition[] = dataRangeList.map(item => {
     const dataConditionItem: IDataCondition = {
-      tableId: config.tableId,
+      tableId: customConfig.tableId,
       dataRange: item,
-      series: config.statisticalType === 'number' ? seriesArr : 'COUNTA',
+      series: customConfig.statisticalType === 'number' ? seriesArr : 'COUNTA',
     };
     return dataConditionItem;
   })
@@ -373,26 +374,45 @@ export const configFormatter = (config: IConfig) => {
 }
 
 /**
+ * 把SDK接口参数转换成自定义配置
+*/
+export const dataConditionFormatter = (dataCondition: IDataCondition, customConfig: ICustomConfig) => {
+  const newCustomConfig = { ...customConfig }
+  newCustomConfig.tableId = dataCondition.tableId;
+  newCustomConfig.tableRange = dataCondition.dataRange!;
+  if (newCustomConfig.statisticalType === 'number') {
+    const series = dataCondition.series as ISeries[];
+    newCustomConfig.numberOrCurrencyFieldId = series[0].fieldId;
+    newCustomConfig.statisticalCalcType = series[0].rollup;
+  }
+  return newCustomConfig;
+}
+
+
+
+/**
  * 现阶段接口只支持单个查询条件，需要手动拼接成多次调用接口模拟批量查询
 */
-export const getPreviewData = async (config: IConfig) => {
-  const dataConditionList = configFormatter(config);
+export const getPreviewData = async (customConfig: ICustomConfig) => {
+  const dataConditionList = configFormatter(customConfig);
   const result: number[] = [];
+  console.log(dataConditionList);
   for (const item of dataConditionList) {
     const data = await dashboard.getPreviewData(item);
     const resultItem = data[1]?.map(item => item.value as number);
     result.push(resultItem?.length ? resultItem[0] : 0);
   }
+  console.log(result);
   return result;
 }
 
-export const getData = async (config: IConfig) => {
-  const dataConditionList = configFormatter(config);
+export const getData = async (customConfig: ICustomConfig) => {
+  const dataConditionList = configFormatter(customConfig);
   const result: number[] = [];
   for (const item of dataConditionList) {
     const myConfig = {
       dataConditions: item,
-      customConfig: config
+      customConfig: customConfig
     } as any
     await dashboard.saveConfig(myConfig)
     await delay(2000)
@@ -421,12 +441,12 @@ export const getMomYoyDesc = (calcMethod: MomOrYoyCalcMethod, calcType: MomOrYoy
   return `${methodStringObj[calcMethod]}${typeStringObj[calcType]}`
 }
 
-export const getRenderData = async (configObj: IConfig, value: number[]) => {
+export const getRenderData = async (customConfig: ICustomConfig, value: number[]) => {
   const renderDataNumber = value[0];
   const momYoyListNumber = value.slice(1);
-  const momYoyList: IMomYoyList[] = configObj.momOrYoy.map((item, index) => {
+  const momYoyList: IMomYoyList[] = customConfig.momOrYoy.map((item, index) => {
     const targetValue = momYoyListNumber[index];
-    const iconStyleObj = getIconStyleObj(configObj.iconStyleId, item.momOrYoyCalcType, renderDataNumber, targetValue)
+    const iconStyleObj = getIconStyleObj(customConfig.iconStyleId, item.momOrYoyCalcType, renderDataNumber, targetValue)
     return {
       desc: item.momOrYoyDesc,
       calcType: item.momOrYoyCalcType,
@@ -437,16 +457,16 @@ export const getRenderData = async (configObj: IConfig, value: number[]) => {
     }
   })
   const renderData: IRenderData = {
-    color: configObj.color,
-    value: indexNumberFormatter(renderDataNumber, configObj.numberFormat, configObj.decimal),
-    prefix: configObj.prefix,
-    suffix: configObj.suffix,
+    color: customConfig.color,
+    value: indexNumberFormatter(renderDataNumber, customConfig.numberFormat, customConfig.decimal),
+    prefix: customConfig.prefix,
+    suffix: customConfig.suffix,
     momYoyList,
   }
   return renderData;
 }
 
-export const renderMainContentData = async (config: IConfig, value: number[], setRenderData: (data: IRenderData) => void) => {
+export const renderMainContentData = async (config: ICustomConfig, value: number[], setRenderData: (data: IRenderData) => void) => {
   if (value.filter(item => item !== undefined).length <= 1) {
     return
   }

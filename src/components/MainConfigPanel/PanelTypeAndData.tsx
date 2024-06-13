@@ -6,7 +6,7 @@ import Icon, { IconPlus, IconDeleteStroked } from '@douyinfe/semi-icons';
 import { SourceType } from "@lark-base-open/js-sdk";
 import type { IDataRange, ViewDataRange, ICategory } from '@lark-base-open/js-sdk';
 import { Divider } from '@douyinfe/semi-ui';
-import { DateType, IConfig, ITableItem, MomOrYoy, Mutable } from '@/common/type';
+import { DateType, ICustomConfig, ITableItem, MomOrYoy, Mutable } from '@/common/type';
 import { calculationList, dateRangeList, momOrYoyCalcTypeList, statisticalTypeList } from '@/common/constant';
 import { getMomYoyDesc, getNewMomOrYoyCalcMethodList } from '@/utils';
 import IconTable from '@/assets/icon_table.svg?react';
@@ -15,13 +15,13 @@ import IconCalendar from '@/assets/icon_calendar.svg?react';
 import IconCalendarChat from '@/assets/icon_calendar_chat.svg?react';
 
 interface IProps {
-  config: IConfig;
-  setConfig: (data: IConfig) => void;
+  config: ICustomConfig;
+  setConfig: (data: ICustomConfig) => void;
   tableList: ITableItem[];
   tableRangeList: IDataRange[];
   dateTypeList: ICategory[];
   numberOrCurrencyList: ICategory[];
-  setData: (config: IConfig) => void;
+  setData: (config: ICustomConfig) => void;
 }
 
 export default function PanelTypeAndData({ config, setConfig, tableList, tableRangeList, dateTypeList, numberOrCurrencyList, setData }: IProps) {
@@ -41,10 +41,10 @@ export default function PanelTypeAndData({ config, setConfig, tableList, tableRa
   const tableRangeChange = async (viewId: any) => {
     setTableRangeViewId(viewId);
     let tableRange: IDataRange;
-    if (tableRangeViewId === 'ALL') {
+    if (viewId === 'ALL') {
       tableRange = { type: SourceType.ALL };
     } else {
-      tableRange = tableRangeList.find((item) => (item as ViewDataRange).viewId === tableRangeViewId) as IDataRange;
+      tableRange = tableRangeList.find((item) => (item as ViewDataRange).viewId === viewId) as IDataRange;
     }
     setConfig({ ...config, tableRange, });
   }
