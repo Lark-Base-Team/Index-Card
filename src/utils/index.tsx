@@ -396,13 +396,11 @@ export const dataConditionFormatter = (dataCondition: IDataCondition, customConf
 export const getPreviewData = async (customConfig: ICustomConfig) => {
   const dataConditionList = configFormatter(customConfig);
   const result: number[] = [];
-  console.log(dataConditionList);
   for (const item of dataConditionList) {
     const data = await dashboard.getPreviewData(item);
     const resultItem = data[1]?.map(item => item.value as number);
     result.push(resultItem?.length ? resultItem[0] : 0);
   }
-  console.log(result);
   return result;
 }
 

@@ -34,13 +34,11 @@ export default function App() {
     // let dataChangeFlag = false;
 
     // const renderMain = async () => {
-    //     const time = new Date().getTime();
     //     dataChangeFlag = true;
     //     const { dataCondition, customConfig } = await getConfig();
     //     const newCustomConfig = dataConditionFormatter(dataCondition, customConfig);
     //     const value = await getData(dataCondition, customConfig);
     //     renderMainContentData(newCustomConfig, value, setRenderData);
-    //     console.log((new Date().getTime() - time) / 1000);
     //     setTimeout(() => {
     //         dataChangeFlag = false;
     //     }, delayedTime)
