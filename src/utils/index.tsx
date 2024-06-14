@@ -30,17 +30,19 @@ export const getIcon = (iconName: string, iconSize?: string, marginRight = '0.8v
  * 计算环同比指标的展示结果
 */
 export const indexNumberFormatter = (indexValue: number, formatterType: NumberFormat, decimal: number) => {
+  let result = '';
   if (formatterType === 'numberMillennials') { //数字千分位
     const indexStringArr = indexValue.toFixed(decimal).split('.');
     const str1 = numberToMillennials(indexStringArr[0]);
-    return indexStringArr.length > 1 ? `${str1}.${indexStringArr[1]}` : str1;
+    result = indexStringArr.length > 1 ? `${str1}.${indexStringArr[1]}` : str1;
   } else if (formatterType === 'number') { //数字
-    return indexValue.toFixed(decimal);
+    result = indexValue.toFixed(decimal);
   } else if (formatterType === 'percentage') { //数字百分比
-    return (indexValue * 100).toFixed(decimal) + '%';
+    result = (indexValue * 100).toFixed(decimal) + '%';
   } else { //数字千分比
-    return (indexValue * 1000).toFixed(decimal) + '‰';
+    result = (indexValue * 1000).toFixed(decimal) + '‰';
   }
+  return result;
 }
 
 /**
@@ -288,16 +290,16 @@ export const getIconStyleObj = (iconStyleId: IconStyleId, calcType: MomOrYoyCalc
 /**
  * 根据环同比的指标获取对应的指标计算结果
 */
-export const getMomYoyCalcResult = (calcType: MomOrYoyCalcType, nowValue: number, targetValue: number) => {
+export const getMomYoyCalcResult = (calcType: MomOrYoyCalcType, nowValue: number, targetValue: number, decimal: number) => {
   let result = '';
   if (calcType === 'differenceRate') { // 差异率
     const value = ((Math.abs((nowValue - targetValue) / targetValue)) * 100);
-    result = targetValue !== 0 ? `${value.toFixed(0)}%` : ``;
+    result = targetValue !== 0 ? `${value.toFixed(decimal)}%` : ``;
   } else if (calcType === 'differenceValue') { // 差异值
     const value = Math.abs((nowValue - targetValue));
-    result = value ? `${value}` : '';
+    result = value ? `${value.toFixed(decimal)}` : '';
   } else { // 原始值
-    result = `${targetValue}`;
+    result = `${targetValue.toFixed(decimal)}`;
   }
   return result;
 }
@@ -439,6 +441,9 @@ export const getMomYoyDesc = (calcMethod: MomOrYoyCalcMethod, calcType: MomOrYoy
   return `${methodStringObj[calcMethod]}${typeStringObj[calcType]}`
 }
 
+/**
+ * 根据配置和数据得到需要渲染的数据
+*/
 export const getRenderData = async (customConfig: ICustomConfig, value: number[]) => {
   const renderDataNumber = value[0];
   const momYoyListNumber = value.slice(1);
@@ -448,7 +453,7 @@ export const getRenderData = async (customConfig: ICustomConfig, value: number[]
     return {
       desc: item.momOrYoyDesc,
       calcType: item.momOrYoyCalcType,
-      value: getMomYoyCalcResult(item.momOrYoyCalcType, renderDataNumber, targetValue),
+      value: getMomYoyCalcResult(item.momOrYoyCalcType, renderDataNumber, targetValue, customConfig.decimal),
       color: iconStyleObj.color,
       icon: iconStyleObj.icon,
 
@@ -464,10 +469,47 @@ export const getRenderData = async (customConfig: ICustomConfig, value: number[]
   return renderData;
 }
 
+/**
+ * 把数据渲染到主界面
+*/
 export const renderMainContentData = async (config: ICustomConfig, value: number[], setRenderData: (data: IRenderData) => void) => {
   if (value.filter(item => item !== undefined).length <= 1) {
     return
   }
   const data = await getRenderData(config, value);
   setRenderData(data);
+}
+
+
+/**
+ * 获取一段文本需要占据的容器宽度
+*/
+export const getTextWidth = (text: string, fontSize: number, fontFamily = 'D-DIN-Bold') => {
+  const tempElement = document.createElement('span');
+  tempElement.textContent = text;
+  tempElement.style.fontSize = `${fontSize}vmax`;
+  tempElement.style.fontFamily = fontFamily;
+  tempElement.style.visibility = 'hidden';
+  tempElement.style.whiteSpace = 'nowrap';
+  document.body.appendChild(tempElement);
+  const width = tempElement.offsetWidth;
+  document.body.removeChild(tempElement);
+  return width;
+}
+
+/**
+ * 获取能够在容器内完全展示的字体大小
+*/
+export const getDomTextFontSize = (targetDom: HTMLDivElement, text: string, fontSize: number) => {
+  const targetDomWidth = targetDom.offsetWidth;
+  if (targetDomWidth === 0) {
+    return fontSize
+  }
+  let domFontSize = fontSize;
+  let newTextWidth = getTextWidth(text, domFontSize);
+  while (targetDomWidth <= newTextWidth) {
+    domFontSize -= 1;
+    newTextWidth = getTextWidth(text, domFontSize)
+  }
+  return domFontSize;
 }

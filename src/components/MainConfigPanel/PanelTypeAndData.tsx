@@ -49,7 +49,7 @@ export default function PanelTypeAndData({ config, setConfig, tableList, tableRa
     setConfig({ ...config, tableRange, });
   }
 
-  const handleChange = (key: string, value: any) => {
+  const handlerChange = (key: string, value: any) => {
     if (key === 'dateTypeFieldId') {
       const dateTypeFieldType = dateTypeList.find((item) => item.fieldId === value)?.fieldType as DateType;
       setConfig({ ...config, [key]: value, dateTypeFieldType });
@@ -132,7 +132,7 @@ export default function PanelTypeAndData({ config, setConfig, tableList, tableRa
           placeholder={t('dataPlaceholder')}
           prefix={<Icon svg={<IconCalendar />} />}
           value={config.dateTypeFieldId}
-          onChange={(value) => { handleChange('dateTypeFieldId', value) }}>
+          onChange={(value) => { handlerChange('dateTypeFieldId', value) }}>
           {dateTypeList.map((item) =>
             (<Select.Option value={item.fieldId} key={item.fieldId}>{item.fieldName}</Select.Option>))
           }
@@ -151,7 +151,7 @@ export default function PanelTypeAndData({ config, setConfig, tableList, tableRa
         <Select
           optionList={statisticalTypeList as Mutable<typeof statisticalTypeList>}
           value={config.statisticalType}
-          onChange={(value) => { handleChange('statisticalType', value) }}>
+          onChange={(value) => { handlerChange('statisticalType', value) }}>
         </Select>
       </div>
       {config.statisticalType === 'number' && (
@@ -160,14 +160,14 @@ export default function PanelTypeAndData({ config, setConfig, tableList, tableRa
             <Select
               optionList={calculationList as Mutable<typeof calculationList>}
               value={config.statisticalCalcType}
-              onChange={(value) => handleChange('statisticalCalcType', value)}>
+              onChange={(value) => handlerChange('statisticalCalcType', value)}>
             </Select>
           </div>
           <div className='form-item'>
             <Select
               prefix={<Icon svg={<IconNumber />} />}
               value={config.numberOrCurrencyFieldId}
-              onChange={(value) => { handleChange('numberOrCurrencyFieldId', value) }}>
+              onChange={(value) => { handlerChange('numberOrCurrencyFieldId', value) }}>
               {numberOrCurrencyList.map((item) =>
                 (<Select.Option value={item.fieldId} key={item.fieldId}>{item.fieldName}</Select.Option>))
               }

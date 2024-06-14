@@ -4,15 +4,29 @@ import type { IRenderData } from '@/common/type'
 import { getIcon } from '@/utils';
 import { colors } from '@/components/ColorPicker'
 import { DashboardState, dashboard } from '@lark-base-open/js-sdk';
+import { useEffect, useRef } from 'react';
 
-
-export default function MainContent({ renderData }: { renderData: IRenderData }) {
+interface IProps {
+  renderData: IRenderData;
+  numberFontSize: number;
+}
+export default function MainContent({ renderData, numberFontSize }: IProps) {
   const isConfig = dashboard.state === DashboardState.Config || dashboard.state === DashboardState.Create;
+
+  const numberContentRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (numberContentRef.current) {
+      numberContentRef.current.style.fontSize = `${numberFontSize}vmax`;
+    }
+  }, [numberFontSize]);
 
   return (
     <div className='main-content'>
       <div className={classnames({ 'main-content-warp': true, 'is-config': isConfig })}>
-        <div className='main-content-number text-hidden' style={{ color: colors.find(item => item.name === renderData.color)?.value }}>
+        <div
+          ref={numberContentRef}
+          className='main-content-number text-hidden'
+          style={{ color: colors.find(item => item.name === renderData.color)?.value }}>
           {`${renderData.prefix}${renderData.value}${renderData.suffix}`}
         </div>
         {

@@ -7,12 +7,10 @@ import { useTheme } from './hooks';
 import classnames from 'classnames'
 import MainContent from './components/MainContent';
 import MainConfigPanel from './components/MainConfigPanel';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { debounce } from 'lodash-es';
 import type { IRenderData } from '@/common/type';
-import { useEffect } from 'react';
-import { dataConditionFormatter, getConfig, getPreviewData, renderMainContentData } from './utils';
-
-
+import { dataConditionFormatter, getConfig, getDomTextFontSize, getPreviewData, renderMainContentData } from './utils';
 
 export default function App() {
     useTheme();
@@ -27,6 +25,27 @@ export default function App() {
         suffix: '', // 前缀
         momYoyList: [], // 同比、环比
     });
+
+    const [numberFontSize, setNumberFontSize] = useState(26);
+    const mainDomRef = useRef<HTMLDivElement>(null);
+    const fontSizeHandler = debounce(() => {
+        if (mainDomRef.current) {
+            const text = `${renderData.prefix}${renderData.value}${renderData.suffix}`;
+            const fontSize = getDomTextFontSize(mainDomRef.current, text, numberFontSize);
+            setNumberFontSize(fontSize);
+        }
+    }, 200);
+    const resizeHandler = () => {
+        fontSizeHandler();
+    }
+
+    useEffect(() => {
+        fontSizeHandler();
+        window.addEventListener('resize', resizeHandler);
+        return () => {
+            window.removeEventListener('resize', resizeHandler);
+        }
+    }, [renderData]);
 
     // 因接口限制，需要手动拼接多次saveConfig和getData会触发多次configChange事件
     // 又因为configChange事件不是立即触发，需要设置延时，在延时范围内不触发change事件，暂定3000毫秒
@@ -44,7 +63,7 @@ export default function App() {
     //     }, delayedTime)
     // }
 
-    // const dataChangeHandle = async () => {
+    // const dataChangeHandler = async () => {
     //     if (!dataChangeFlag) {
     //         renderMain()
     //     }
@@ -57,7 +76,7 @@ export default function App() {
         renderMainContentData(newCustomConfig, value, setRenderData);
     }
 
-    const dataChangeHandle = async () => {
+    const dataChangeHandler = async () => {
         renderMain()
     }
 
@@ -65,13 +84,13 @@ export default function App() {
     useEffect(() => {
         if (dashboard.state === DashboardState.View || dashboard.state === DashboardState.FullScreen) {
             renderMain();
-            dashboard.onDataChange(dataChangeHandle);
+            dashboard.onDataChange(dataChangeHandler);
         }
     }, []);
 
     return (
-        <main className={classnames(isConfig ? 'top-border' : '', 'main')}>
-            <MainContent renderData={renderData} />
+        <main className={classnames(isConfig ? 'top-border' : '', 'main')} ref={mainDomRef}>
+            <MainContent renderData={renderData} numberFontSize={numberFontSize} />
             {isConfig && <MainConfigPanel setRenderData={setRenderData} />}
         </main>
     )

@@ -12,7 +12,7 @@ export default function PanelCustomStyle({ config, setConfig }: { config: ICusto
 
   const { t } = useTranslation();
 
-  const handleChange = (key: string, value: any) => {
+  const handlerChange = (key: string, value: any) => {
     setConfig({ ...config, [key]: value });
   }
 
@@ -24,11 +24,11 @@ export default function PanelCustomStyle({ config, setConfig }: { config: ICusto
     <div className="form-main">
       <div className="form-title">{t('color')}</div>
       <div className='form-item' style={{ margin: '6px 0 18px 0' }}>
-        <ColorPicker onChange={(value) => { handleChange('color', value) }} name={config.color} />
+        <ColorPicker onChange={(value) => { handlerChange('color', value) }} name={config.color} />
       </div>
       <div className='form-title'>{t('iconStyle')}</div>
       <div className='form-item'>
-        <Select value={config.iconStyleId} onChange={(value) => { handleChange('iconStyleId', value) }}>
+        <Select value={config.iconStyleId} onChange={(value) => { handlerChange('iconStyleId', value) }}>
           {iconStyleList.map((item) =>
           (<Select.Option value={item.id} key={item.id}>
             <div className='index-icon'>
@@ -57,14 +57,14 @@ export default function PanelCustomStyle({ config, setConfig }: { config: ICusto
             style={{ marginRight: '10px', flex: 1 }}
             value={config.decimal}
             formatter={formatterToNumber}
-            onNumberChange={(value) => { handleChange('decimal', value) }}
+            onNumberChange={(value) => { handlerChange('decimal', value) }}
             min={0}
             max={5}
           />
           <Select
             value={config.numberFormat}
             style={{ flex: 1 }}
-            onChange={(value) => { handleChange('numberFormat', value) }}>
+            onChange={(value) => { handlerChange('numberFormat', value) }}>
             {dataFormatList.map((item) =>
               (<Select.Option value={item.value} key={item.value}>{item.label}</Select.Option>))
             }
@@ -77,14 +77,14 @@ export default function PanelCustomStyle({ config, setConfig }: { config: ICusto
           <Input
             value={config.prefix}
             placeholder={t('prefixPlaceholder')}
-            onChange={(value) => { handleChange('prefix', value) }} />
+            onChange={(value) => { handlerChange('prefix', value) }} />
         </div>
         <div className='form-item'>
           <div className='form-subTitle'>{t('suffix')}</div>
           <Input
             value={config.suffix}
             placeholder={t('suffixPlaceholder')}
-            onChange={(value) => { handleChange('suffix', value) }} />
+            onChange={(value) => { handlerChange('suffix', value) }} />
         </div>
       </div>
     </div>
