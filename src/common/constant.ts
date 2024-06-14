@@ -227,7 +227,6 @@ export const dataFormatList = [
 
 export const defaultConfig: ICustomConfig = {
   tableId: '',
-  tableRange: { type: SourceType.ALL },
   dateTypeFieldId: '',
   dateTypeFieldType: FieldType.DateTime,
   dateRange: FilterDuration.Today,

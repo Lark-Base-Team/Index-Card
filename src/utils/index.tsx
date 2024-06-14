@@ -1,5 +1,5 @@
 import { iconStyleList, icons, momOrYoyCalcMethodList } from '@/common/constant';
-import { FilterConjunction, FilterDuration, FilterOperator, IDataCondition, IDataRange, ISeries, dashboard } from "@lark-base-open/js-sdk";
+import { FilterConjunction, FilterDuration, FilterOperator, IDataCondition, IDataRange, ISeries, SourceType, dashboard } from "@lark-base-open/js-sdk";
 import { DateRangeType, ICustomConfig, IMomYoyList, IRenderData, IconColor, IconStyleId, MomOrYoy, MomOrYoyCalcMethod, MomOrYoyCalcType, MyFilterDurationEnum, NumberFormat } from '@/common/type'
 import dayjs from 'dayjs';
 import quarterOfYear from 'dayjs/plugin/quarterOfYear'
@@ -341,7 +341,7 @@ export const configFormatter = (customConfig: ICustomConfig) => {
     // 由于接口参数会把传过去的时间格式化成0点0分0秒，需要把结束时间推到后一天的00:00:00
     endTime = dayjs(endTime).add(1, 'day').startOf('day').valueOf();
     const dataRangeItem: IDataRange = {
-      ...customConfig.tableRange,
+      type: SourceType.ALL,
       filterInfo: {
         conjunction: FilterConjunction.And,
         conditions: [{
@@ -381,7 +381,6 @@ export const configFormatter = (customConfig: ICustomConfig) => {
 export const dataConditionFormatter = (dataCondition: IDataCondition, customConfig: ICustomConfig) => {
   const newCustomConfig = { ...customConfig }
   newCustomConfig.tableId = dataCondition.tableId;
-  newCustomConfig.tableRange = dataCondition.dataRange!;
   if (newCustomConfig.statisticalType === 'number') {
     const series = dataCondition.series as ISeries[];
     newCustomConfig.numberOrCurrencyFieldId = series[0].fieldId;

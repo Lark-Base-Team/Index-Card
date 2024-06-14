@@ -18,35 +18,19 @@ interface IProps {
   config: ICustomConfig;
   setConfig: (data: ICustomConfig) => void;
   tableList: ITableItem[];
-  tableRangeList: IDataRange[];
   dateTypeList: ICategory[];
   numberOrCurrencyList: ICategory[];
   setData: (config: ICustomConfig) => void;
 }
 
-export default function PanelTypeAndData({ config, setConfig, tableList, tableRangeList, dateTypeList, numberOrCurrencyList, setData }: IProps) {
+export default function PanelTypeAndData({ config, setConfig, tableList, dateTypeList, numberOrCurrencyList, setData }: IProps) {
   const { t } = useTranslation();
 
-  const defaultViewId = config.tableRange.type === SourceType.ALL ? 'ALL' : config.tableRange.viewId;
-  const [tableRangeViewId, setTableRangeViewId] = useState<string>(defaultViewId);
   const [newMomOrYoyCalcMethodList, setNewMomOrYoyCalcMethodList] = useState(getNewMomOrYoyCalcMethodList(config.dateRange));
 
   const tableChange = async (tableId: any) => {
     config.tableId = tableId;
-    config.tableRange = { type: SourceType.ALL };
-    setTableRangeViewId('ALL');
     setData(config);
-  }
-
-  const tableRangeChange = async (viewId: any) => {
-    setTableRangeViewId(viewId);
-    let tableRange: IDataRange;
-    if (viewId === 'ALL') {
-      tableRange = { type: SourceType.ALL };
-    } else {
-      tableRange = tableRangeList.find((item) => (item as ViewDataRange).viewId === viewId) as IDataRange;
-    }
-    setConfig({ ...config, tableRange, });
   }
 
   const handlerChange = (key: string, value: any) => {
@@ -107,21 +91,6 @@ export default function PanelTypeAndData({ config, setConfig, tableList, tableRa
           prefix={<Icon svg={<IconTable />} />}
           optionList={tableList as Mutable<typeof tableList>}
           value={config.tableId} onChange={tableChange}>
-        </Select>
-      </div>
-      <div className="form-title">{t('dataRange')}</div>
-      <div className='form-item'>
-        <Select prefix={<Icon svg={<IconTable />} />} value={tableRangeViewId} onChange={tableRangeChange}>
-          {
-            tableRangeList.map(item => {
-              let newItem = { ...item } as ViewDataRange;
-              if (item.type === SourceType.ALL) {
-                newItem.viewName = t('allData');
-                newItem.viewId = 'ALL';
-              }
-              return newItem
-            }).map(item => (<Select.Option value={item.viewId} key={item.viewId}>{item.viewName}</Select.Option>))
-          }
         </Select>
       </div>
       <Divider style={{ borderColor: 'var(--divider)', marginTop: '12px' }} />

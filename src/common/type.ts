@@ -52,7 +52,6 @@ export enum MyFilterDurationEnum {
 export type DateType = FieldType.DateTime | FieldType.CreatedTime | FieldType.ModifiedTime;
 export interface ICustomConfig {
   tableId: string; // 数据源
-  tableRange: IDataRange; //数据范围
   dateTypeFieldId: string; // 日期类型字段的Id
   dateTypeFieldType: DateType; // 日期类型字段的type
   dateRange: DateRangeType; // 日期范围

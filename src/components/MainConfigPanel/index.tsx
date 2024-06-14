@@ -2,8 +2,8 @@ import './index.scss'
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Toast } from '@douyinfe/semi-ui';
-import { dashboard, DashboardState, base, SourceType, FieldType } from "@lark-base-open/js-sdk";
-import type { IDataRange, ICategory, IDataCondition, ISeries } from '@lark-base-open/js-sdk';
+import { dashboard, DashboardState, base, FieldType } from "@lark-base-open/js-sdk";
+import type { ICategory } from '@lark-base-open/js-sdk';
 import { Tabs, TabPane } from '@douyinfe/semi-ui';
 import PanelTypeAndData from './PanelTypeAndData';
 import PanelCustomStyle from './PanelCustomStyle';
@@ -49,7 +49,6 @@ export default function MainConfigPanel({ setRenderData }: IProps) {
   }
 
   const [tableList, setTableList] = useState<ITableItem[]>([]);
-  const [tableRangeList, setTableRangeList] = useState<IDataRange[]>([{ type: SourceType.ALL }]);
   const [dateTypeList, setDateTypeList] = useState<ICategory[]>([]);
   const [numberOrCurrencyList, setNumberOrCurrencyList] = useState<ICategory[]>([]);
 
@@ -63,10 +62,6 @@ export default function MainConfigPanel({ setRenderData }: IProps) {
     }
 
     return resultList;
-  }, []);
-
-  const getTableRange = useCallback((tableId: string) => {
-    return dashboard.getTableDataRange(tableId);
   }, []);
 
   const getCategories = useCallback(async (tableId: string) => {
@@ -85,8 +80,6 @@ export default function MainConfigPanel({ setRenderData }: IProps) {
    * 当tableID变化后，需要根据config的配置重新设置所有依赖数据
   */
   const setData = async (customConfig: ICustomConfig, tableIdChange: boolean = true) => {
-    const rangeList = await getTableRange(customConfig.tableId);
-    setTableRangeList(rangeList);
     const { dateTypeList, numberOrCurrencyList } = await getCategories(customConfig.tableId);
     setDateTypeList(dateTypeList);
     setNumberOrCurrencyList(numberOrCurrencyList);
@@ -117,7 +110,7 @@ export default function MainConfigPanel({ setRenderData }: IProps) {
 
   useEffect(() => {
     initData();
-  }, [getTableList, getTableRange, getCategories]);
+  }, [getTableList, getCategories]);
 
   // 用于临时存储SDK接口返回的指标数据
   const [valueArr, setValueArr] = useState<number[]>([]);
@@ -134,7 +127,7 @@ export default function MainConfigPanel({ setRenderData }: IProps) {
   // 类型与数据面板变化，依赖base SDK接口的数据计算，重新获取指标数据
   useEffect(() => {
     renderMainDataDebounce();
-  }, [config.tableId, config.tableRange, config.dateTypeFieldId, config.dateTypeFieldType, config.dateRange, config.statisticalType, config.numberOrCurrencyFieldId, config.statisticalCalcType, JSON.stringify(config.momOrYoy)]);
+  }, [config.tableId, config.dateTypeFieldId, config.dateTypeFieldType, config.dateRange, config.statisticalType, config.numberOrCurrencyFieldId, config.statisticalCalcType, JSON.stringify(config.momOrYoy)]);
 
 
   const renderMainStyleDebounce = debounce(() => {
@@ -159,7 +152,6 @@ export default function MainConfigPanel({ setRenderData }: IProps) {
                   config={config}
                   setConfig={setConfig}
                   tableList={tableList}
-                  tableRangeList={tableRangeList}
                   dateTypeList={dateTypeList}
                   numberOrCurrencyList={numberOrCurrencyList}
                   setData={setData}
