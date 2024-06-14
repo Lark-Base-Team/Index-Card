@@ -1,27 +1,55 @@
 import './index.scss'
 import classnames from 'classnames';
 import type { IRenderData } from '@/common/type'
-import { getIcon } from '@/utils';
+import { getDomTextFontSize, getIcon } from '@/utils';
 import { colors } from '@/components/ColorPicker'
 import { DashboardState, dashboard } from '@lark-base-open/js-sdk';
-import { useEffect, useRef } from 'react';
+import { RefObject, useEffect, useRef } from 'react';
+import { debounce } from 'lodash-es';
 
 interface IProps {
-  renderData: IRenderData;
-  numberFontSize: number;
+  renderData: IRenderData; // 标数据
+  mainDomRef: RefObject<HTMLDivElement>; // 最外层的容器dom
 }
-export default function MainContent({ renderData, numberFontSize }: IProps) {
+export default function MainContent({ renderData, mainDomRef }: IProps) {
   const isConfig = dashboard.state === DashboardState.Config || dashboard.state === DashboardState.Create;
 
-  const numberContentRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    if (numberContentRef.current) {
-      numberContentRef.current.style.fontSize = `${numberFontSize}vmax`;
+  const mainContentRef = useRef<HTMLDivElement>(null); // 主数据容器dom
+  const numberContentRef = useRef<HTMLDivElement>(null); // 文字容器dom
+
+  // 设置文字大小
+  const setFontSizeDebounce = debounce(() => {
+    const text = `${renderData.prefix}${renderData.value}${renderData.suffix}`;
+    let fontSize = 26;
+    if (isConfig) {
+      // 创建状态和配置状态时，使用主数据容器宽度计算文字大小
+      const defaultFontSize = 26;
+      const mainContentWidth = mainContentRef.current?.offsetWidth || 0;
+      fontSize = getDomTextFontSize(mainContentWidth, text, defaultFontSize);
+    } else {
+      // 否则使用最外层容器宽度计算文字大小
+      const defaultFontSize = 26;
+      const mainDomWidth = mainDomRef.current?.offsetWidth || 0;
+      fontSize = getDomTextFontSize(mainDomWidth, text, defaultFontSize);
     }
-  }, [numberFontSize]);
+    numberContentRef.current && (numberContentRef.current.style.fontSize = `${fontSize}vmax`);
+  }, 200);
+
+  const resizeHandler = () => {
+    setFontSizeDebounce();
+  }
+
+  useEffect(() => {
+    resizeHandler();
+    window.addEventListener('resize', resizeHandler);
+    return () => {
+      window.removeEventListener('resize', resizeHandler);
+    }
+  }, [renderData]);
+
 
   return (
-    <div className='main-content'>
+    <div className='main-content' ref={mainContentRef}>
       <div className={classnames({ 'main-content-warp': true, 'is-config': isConfig })}>
         <div
           ref={numberContentRef}

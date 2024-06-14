@@ -500,14 +500,13 @@ export const getTextWidth = (text: string, fontSize: number, fontFamily = 'D-DIN
 /**
  * 获取能够在容器内完全展示的字体大小
 */
-export const getDomTextFontSize = (targetDom: HTMLDivElement, text: string, fontSize: number) => {
-  const targetDomWidth = targetDom.offsetWidth;
-  if (targetDomWidth === 0) {
+export const getDomTextFontSize = (domWidth: number, text: string, fontSize: number) => {
+  if (domWidth === 0) {
     return fontSize
   }
   let domFontSize = fontSize;
   let newTextWidth = getTextWidth(text, domFontSize);
-  while (targetDomWidth <= newTextWidth) {
+  while (domWidth <= newTextWidth) {
     domFontSize -= 1;
     newTextWidth = getTextWidth(text, domFontSize)
   }

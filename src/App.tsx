@@ -1,5 +1,5 @@
 import './App.scss';
-import { dashboard, DashboardState, IDataCondition } from "@lark-base-open/js-sdk";
+import { dashboard, DashboardState } from "@lark-base-open/js-sdk";
 import './locales/i18n';
 import 'dayjs/locale/zh-cn';
 import 'dayjs/locale/en';
@@ -8,9 +8,8 @@ import classnames from 'classnames'
 import MainContent from './components/MainContent';
 import MainConfigPanel from './components/MainConfigPanel';
 import { useState, useEffect, useRef } from 'react';
-import { debounce } from 'lodash-es';
 import type { IRenderData } from '@/common/type';
-import { dataConditionFormatter, getConfig, getDomTextFontSize, getPreviewData, renderMainContentData } from './utils';
+import { dataConditionFormatter, getConfig, getPreviewData, renderMainContentData } from './utils';
 
 export default function App() {
     useTheme();
@@ -26,26 +25,7 @@ export default function App() {
         momYoyList: [], // 同比、环比
     });
 
-    const [numberFontSize, setNumberFontSize] = useState(26);
     const mainDomRef = useRef<HTMLDivElement>(null);
-    const fontSizeHandler = debounce(() => {
-        if (mainDomRef.current) {
-            const text = `${renderData.prefix}${renderData.value}${renderData.suffix}`;
-            const fontSize = getDomTextFontSize(mainDomRef.current, text, numberFontSize);
-            setNumberFontSize(fontSize);
-        }
-    }, 200);
-    const resizeHandler = () => {
-        fontSizeHandler();
-    }
-
-    useEffect(() => {
-        fontSizeHandler();
-        window.addEventListener('resize', resizeHandler);
-        return () => {
-            window.removeEventListener('resize', resizeHandler);
-        }
-    }, [renderData]);
 
     // 因接口限制，需要手动拼接多次saveConfig和getData会触发多次configChange事件
     // 又因为configChange事件不是立即触发，需要设置延时，在延时范围内不触发change事件，暂定3000毫秒
@@ -90,7 +70,7 @@ export default function App() {
 
     return (
         <main className={classnames(isConfig ? 'top-border' : '', 'main')} ref={mainDomRef}>
-            <MainContent renderData={renderData} numberFontSize={numberFontSize} />
+            <MainContent renderData={renderData} mainDomRef={mainDomRef} />
             {isConfig && <MainConfigPanel setRenderData={setRenderData} />}
         </main>
     )
