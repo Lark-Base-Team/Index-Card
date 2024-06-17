@@ -23,7 +23,7 @@ export default function MainContent({ renderData, mainDomRef }: IProps) {
     let fontSize = 26;
     if (isConfig) {
       // 创建状态和配置状态时，使用主数据容器宽度计算文字大小
-      const defaultFontSize = 26;
+      const defaultFontSize = 14;
       const mainContentWidth = mainContentRef.current?.offsetWidth || 0;
       fontSize = getDomTextFontSize(mainContentWidth, text, defaultFontSize);
     } else {
