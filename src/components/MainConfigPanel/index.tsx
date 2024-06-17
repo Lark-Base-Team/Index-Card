@@ -66,13 +66,27 @@ export default function MainConfigPanel({ setRenderData }: IProps) {
 
   const getCategories = useCallback(async (tableId: string) => {
     const categories = await dashboard.getCategories(tableId);
-    const FieldTypes = [FieldType.DateTime, FieldType.CreatedTime, FieldType.ModifiedTime];
+    const FieldTypes = [FieldType.DateTime, FieldType.CreatedTime, FieldType.ModifiedTime];// 日期时间、创建时间、修改时间
     const dateTypeList = categories.filter(item => FieldTypes.includes(item.fieldType)) || [];
-    const numberOrCurrencyTypes = [FieldType.Number, FieldType.Currency];
+    const numberOrCurrencyTypes = [FieldType.Number, FieldType.Currency, FieldType.Formula];// 数字、货币、公式字段
     const numberOrCurrencyList = categories.filter(item => numberOrCurrencyTypes.includes(item.fieldType)) || [];
+    const table = await base.getTable(tableId);
+    const recordList = await table.getRecordList();
+    const list = [];
+    // 判断集合里的值是否为数字
+    for (const item of numberOrCurrencyList) {
+      for (const record of recordList) {
+        const cell = await record.getCellByField(item.fieldId);
+        const val = await cell.getValue();
+        if (typeof val === 'number' && Number.isFinite(val)) {
+          list.push(item)
+        }
+        break;
+      }
+    }
     return {
       dateTypeList,
-      numberOrCurrencyList,
+      numberOrCurrencyList: list,
     };
   }, []);
 
