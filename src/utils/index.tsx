@@ -112,8 +112,8 @@ export const getDateRangeTimestamp = (dateTypeRange: DateRangeType) => {
       return { startTime, endTime };
     },
     [FilterDuration.LastWeek]: () => {
-      const startTime = dayjs().startOf('week').subtract(1, 'week').valueOf();
-      const endTime = dayjs().endOf('week').subtract(1, 'week').valueOf();
+      const startTime = dayjs().subtract(1, 'week').startOf('week').valueOf();
+      const endTime = dayjs().subtract(1, 'week').endOf('week').valueOf();
       return { startTime, endTime };
     },
     [FilterDuration.CurrentMonth]: () => {
@@ -122,8 +122,8 @@ export const getDateRangeTimestamp = (dateTypeRange: DateRangeType) => {
       return { startTime, endTime };
     },
     [FilterDuration.LastMonth]: () => {
-      const startTime = dayjs().startOf('month').subtract(1, 'month').valueOf();
-      const endTime = dayjs().endOf('month').subtract(1, 'month').valueOf();
+      const startTime = dayjs().subtract(1, 'month').startOf('month').valueOf();
+      const endTime = dayjs().subtract(1, 'month').endOf('month').valueOf();
       return { startTime, endTime };
     },
     [MyFilterDurationEnum.CurrentQuarter]: () => {
@@ -132,8 +132,8 @@ export const getDateRangeTimestamp = (dateTypeRange: DateRangeType) => {
       return { startTime, endTime };
     },
     [MyFilterDurationEnum.LastQuarter]: () => {
-      const startTime = dayjs().startOf('quarter').subtract(1, 'quarter').valueOf();
-      const endTime = dayjs().endOf('quarter').subtract(1, 'quarter').valueOf();
+      const startTime = dayjs().subtract(1, 'quarter').startOf('quarter').valueOf();
+      const endTime = dayjs().subtract(1, 'quarter').endOf('quarter').valueOf();
       return { startTime, endTime };
     },
     [MyFilterDurationEnum.CurrentYear]: () => {
@@ -142,37 +142,37 @@ export const getDateRangeTimestamp = (dateTypeRange: DateRangeType) => {
       return { startTime, endTime };
     },
     [MyFilterDurationEnum.LastYear]: () => {
-      const startTime = dayjs().startOf('year').subtract(1, 'year').valueOf();
-      const endTime = dayjs().endOf('year').subtract(1, 'year').valueOf();
+      const startTime = dayjs().subtract(1, 'year').startOf('year').valueOf();
+      const endTime = dayjs().subtract(1, 'year').endOf('year').valueOf();
       return { startTime, endTime };
     },
     [FilterDuration.TheLastWeek]: () => {
-      const startTime = dayjs().endOf('day').subtract(7, 'day').valueOf();
+      const startTime = dayjs().subtract(7, 'day').endOf('day').valueOf();
       const endTime = dayjs().endOf('day').valueOf();
       return { startTime, endTime };
     },
     [MyFilterDurationEnum.Last14Days]: () => {
-      const startTime = dayjs().endOf('day').subtract(14, 'day').valueOf();
+      const startTime = dayjs().subtract(14, 'day').endOf('day').valueOf();
       const endTime = dayjs().endOf('day').valueOf();
       return { startTime, endTime };
     },
     [FilterDuration.TheLastMonth]: () => {
-      const startTime = dayjs().endOf('day').subtract(30, 'day').valueOf();
+      const startTime = dayjs().subtract(30, 'day').endOf('day').valueOf();
       const endTime = dayjs().endOf('day').valueOf();
       return { startTime, endTime };
     },
     [MyFilterDurationEnum.Last365Days]: () => {
-      const startTime = dayjs().endOf('day').subtract(365, 'day').valueOf();
+      const startTime = dayjs().subtract(365, 'day').endOf('day').valueOf();
       const endTime = dayjs().endOf('day').valueOf();
       return { startTime, endTime };
     },
     [MyFilterDurationEnum.Last3Months]: () => {
-      const startTime = dayjs().endOf('day').subtract(3, 'month').valueOf();
+      const startTime = dayjs().subtract(3, 'month').endOf('day').valueOf();
       const endTime = dayjs().endOf('day').valueOf();
       return { startTime, endTime };
     },
     [MyFilterDurationEnum.Last6Months]: () => {
-      const startTime = dayjs().endOf('day').subtract(6, 'month').valueOf();
+      const startTime = dayjs().subtract(6, 'month').endOf('day').valueOf();
       const endTime = dayjs().endOf('day').valueOf();
       return { startTime, endTime };
     },
@@ -254,8 +254,8 @@ export const getMomYoyDateRange = (dateTypeRange: DateRangeType, momYoyCalcMetho
   const value = getSubtractParamsValue(dateTypeRange);
   const unit = getSubtractParamsUnit(dateTypeRange, momYoyCalcMethod);
   const { startTime, endTime } = getDateRangeTimestamp(dateTypeRange);
-  const timeStart = dayjs(startTime).subtract(value, unit as any).valueOf();
-  const timeEnd = dayjs(endTime).subtract(value, unit as any).valueOf();
+  const timeStart = dayjs(startTime).subtract(value, unit as any).startOf(unit).valueOf();
+  const timeEnd = dayjs(endTime).subtract(value, unit as any).endOf(unit).valueOf();
   return { startTime: timeStart, endTime: timeEnd };
 }
 
