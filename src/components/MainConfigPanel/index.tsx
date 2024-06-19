@@ -68,7 +68,7 @@ export default function MainConfigPanel({ setRenderData }: IProps) {
     const categories = await dashboard.getCategories(tableId);
     const FieldTypes = [FieldType.DateTime, FieldType.CreatedTime, FieldType.ModifiedTime];// 日期时间、创建时间、修改时间
     const dateTypeList = categories.filter(item => FieldTypes.includes(item.fieldType)) || [];
-    const numberOrCurrencyTypes = [FieldType.Number, FieldType.Currency];// 数字、货币、公式字段
+    const numberOrCurrencyTypes = [FieldType.Number, FieldType.Currency, FieldType.Formula];// 数字、货币、公式字段
     const numberOrCurrencyList = categories.filter(item => numberOrCurrencyTypes.includes(item.fieldType)) || [];
     const table = await base.getTable(tableId);
     const recordList = await table.getRecordList();

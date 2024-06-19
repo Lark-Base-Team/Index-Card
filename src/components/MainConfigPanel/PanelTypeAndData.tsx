@@ -3,7 +3,7 @@ import { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Input, Select } from '@douyinfe/semi-ui';
 import Icon, { IconPlus, IconDeleteStroked } from '@douyinfe/semi-icons';
-import { SourceType } from "@lark-base-open/js-sdk";
+import { FieldType, SourceType } from "@lark-base-open/js-sdk";
 import type { IDataRange, ViewDataRange, ICategory } from '@lark-base-open/js-sdk';
 import { Divider } from '@douyinfe/semi-ui';
 import { DateType, ICustomConfig, ITableItem, MomOrYoy, Mutable } from '@/common/type';
@@ -11,6 +11,8 @@ import { calculationList, dateRangeList, momOrYoyCalcTypeList, statisticalTypeLi
 import { getMomYoyDesc, getNewMomOrYoyCalcMethodList } from '@/utils';
 import IconTable from '@/assets/icon_table.svg?react';
 import IconNumber from '@/assets/icon_number.svg?react';
+import IconCurrency from '@/assets/icon_currency.svg?react';
+import IconFormula from '@/assets/icon_formula.svg?react';
 import IconCalendar from '@/assets/icon_calendar.svg?react';
 import IconCalendarChat from '@/assets/icon_calendar_chat.svg?react';
 
@@ -83,6 +85,20 @@ export default function PanelTypeAndData({ config, setConfig, tableList, dateTyp
     setConfig({ ...config });
   }
 
+  // 计算统计方式下拉字段选中的类型的图标
+  const getFieldIdIcon = (fieldId: string) => {
+    type IIconMap = {
+      [key in FieldType]?: JSX.Element;
+    }
+    const iconMap: IIconMap = {
+      [FieldType.Number]: < IconNumber />,
+      [FieldType.Currency]: <IconCurrency />,
+      [FieldType.Formula]: < IconFormula />
+    }
+    const fieldType = numberOrCurrencyList.find(item => item.fieldId === fieldId)?.fieldType as FieldType;
+    return iconMap[fieldType];
+  }
+
   return (
     <div className="form-main">
       <div className="form-title">{t('dataSource')}</div>
@@ -134,7 +150,7 @@ export default function PanelTypeAndData({ config, setConfig, tableList, dateTyp
           </div>
           <div className='form-item'>
             <Select
-              prefix={<Icon svg={<IconNumber />} />}
+              prefix={<Icon svg={getFieldIdIcon(config.numberOrCurrencyFieldId)} />}
               value={config.numberOrCurrencyFieldId}
               onChange={(value) => { handlerChange('numberOrCurrencyFieldId', value) }}>
               {numberOrCurrencyList.map((item) =>
