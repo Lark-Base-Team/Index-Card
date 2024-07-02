@@ -334,12 +334,10 @@ export const configFormatter = (customConfig: ICustomConfig) => {
       startTime = timeObj.startTime;
       endTime = timeObj.endTime;
     }
-    // 由于日期过滤不支持大于等于和小于等于 开始和结束时间需要错开1毫秒
-    // startTime = startTime - 1;
-    // endTime = endTime + 1;
+    // 由于日期过滤不支持大于等于和小于等于 开始和结束时间需要前后各错开1毫秒
+    startTime = startTime - 1;
+    endTime = endTime + 1;
 
-    // 由于接口参数会把传过去的时间格式化成0点0分0秒，需要把结束时间推到后一天的00:00:00
-    endTime = dayjs(endTime).add(1, 'day').startOf('day').valueOf();
     const dataRangeItem: IDataRange = {
       type: SourceType.ALL,
       filterInfo: {
