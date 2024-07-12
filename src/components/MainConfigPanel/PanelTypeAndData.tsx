@@ -47,6 +47,10 @@ export default function PanelTypeAndData({ config, setConfig, tableList, dateTyp
     setNewMomOrYoyCalcMethodList(getNewMomOrYoyCalcMethodList(dateRange));
     const momOrYoy = config.momOrYoy.map((item) => {
       item.momOrYoyCalcMethod = 'mom';
+      item.momOrYoyDesc = ''
+      if (!item.manualSetDesc) {
+        item.momOrYoyDesc = getMomYoyDesc(item.momOrYoyCalcMethod, item.momOrYoyCalcType);
+      }
       return item;
     })
     setConfig({ ...config, dateRange, momOrYoy });
