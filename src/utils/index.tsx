@@ -147,32 +147,38 @@ export const getDateRangeTimestamp = (dateTypeRange: DateRangeType) => {
       return { startTime, endTime };
     },
     [FilterDuration.TheLastWeek]: () => {
-      const startTime = dayjs().subtract(7, 'day').endOf('day').valueOf();
+      // 因为结束时间要计算当天，所有开始时间要少推算一天
+      const startTime = dayjs().subtract(7 - 1, 'day').startOf('day').valueOf();
       const endTime = dayjs().endOf('day').valueOf();
       return { startTime, endTime };
     },
     [MyFilterDurationEnum.Last14Days]: () => {
-      const startTime = dayjs().subtract(14, 'day').endOf('day').valueOf();
+      // 因为结束时间要计算当天，所有开始时间要少推算一天
+      const startTime = dayjs().subtract(14 - 1, 'day').startOf('day').valueOf();
       const endTime = dayjs().endOf('day').valueOf();
       return { startTime, endTime };
     },
     [FilterDuration.TheLastMonth]: () => {
-      const startTime = dayjs().subtract(30, 'day').endOf('day').valueOf();
+      // 因为结束时间要计算当天，所有开始时间要少推算一天
+      const startTime = dayjs().subtract(30 - 1, 'day').startOf('day').valueOf();
       const endTime = dayjs().endOf('day').valueOf();
       return { startTime, endTime };
     },
     [MyFilterDurationEnum.Last365Days]: () => {
-      const startTime = dayjs().subtract(365, 'day').endOf('day').valueOf();
+      // 因为结束时间要计算当天，所有开始时间要少推算一天
+      const startTime = dayjs().subtract(365 - 1, 'day').startOf('day').valueOf();
       const endTime = dayjs().endOf('day').valueOf();
       return { startTime, endTime };
     },
     [MyFilterDurationEnum.Last3Months]: () => {
-      const startTime = dayjs().subtract(3, 'month').endOf('day').valueOf();
+      // 因为结束时间要计算当天，所有开始时间要少推算一天
+      const startTime = dayjs().subtract(3, 'month').subtract(1, 'day').startOf('day').valueOf();
       const endTime = dayjs().endOf('day').valueOf();
       return { startTime, endTime };
     },
     [MyFilterDurationEnum.Last6Months]: () => {
-      const startTime = dayjs().subtract(6, 'month').endOf('day').valueOf();
+      // 因为结束时间要计算当天，所有开始时间要少推算一天
+      const startTime = dayjs().subtract(6, 'month').subtract(1, 'day').startOf('day').valueOf();
       const endTime = dayjs().endOf('day').valueOf();
       return { startTime, endTime };
     },
@@ -254,8 +260,8 @@ export const getMomYoyDateRange = (dateTypeRange: DateRangeType, momYoyCalcMetho
   const value = getSubtractParamsValue(dateTypeRange);
   const unit = getSubtractParamsUnit(dateTypeRange, momYoyCalcMethod);
   const { startTime, endTime } = getDateRangeTimestamp(dateTypeRange);
-  const timeStart = dayjs(startTime).subtract(value, unit as any).startOf(unit).valueOf();
-  const timeEnd = dayjs(endTime).subtract(value, unit as any).endOf(unit).valueOf();
+  const timeStart = dayjs(startTime).subtract(value, unit as any).valueOf();
+  const timeEnd = dayjs(endTime).subtract(value, unit as any).valueOf();
   return { startTime: timeStart, endTime: timeEnd };
 }
 
