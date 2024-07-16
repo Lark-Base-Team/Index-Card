@@ -3,13 +3,15 @@ import { dashboard, DashboardState } from "@lark-base-open/js-sdk";
 import './locales/i18n';
 import 'dayjs/locale/zh-cn';
 import 'dayjs/locale/en';
-import { useTheme } from './hooks';
+import { useSetDayjsLocale, useTheme } from './hooks';
 import classnames from 'classnames'
 import MainContent from './components/MainContent';
 import MainConfigPanel from './components/MainConfigPanel';
 import { useState, useEffect, useRef } from 'react';
 import type { IRenderData } from '@/common/type';
 import { dataConditionFormatter, getConfig, getPreviewData, renderMainContentData } from './utils';
+import { useTranslation } from 'react-i18next';
+import dayjs from 'dayjs';
 
 export default function App() {
     useTheme();
@@ -60,13 +62,16 @@ export default function App() {
         renderMain()
     }
 
+    const { i18nLanguage, setDayjsLocale } = useSetDayjsLocale();
+
     // 展示态
     useEffect(() => {
+        setDayjsLocale();
         if (dashboard.state === DashboardState.View || dashboard.state === DashboardState.FullScreen) {
             renderMain();
             dashboard.onDataChange(dataChangeHandler);
         }
-    }, []);
+    }, [i18nLanguage]);
 
     return (
         <main className={classnames(isConfig ? 'top-border' : '', 'main')} ref={mainDomRef}>

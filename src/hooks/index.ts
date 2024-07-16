@@ -1,6 +1,8 @@
 import { bitable, dashboard } from "@lark-base-open/js-sdk";
 import { useLayoutEffect, useEffect } from "react";
 import { ICustomConfig } from '@/common/type';
+import { useTranslation } from "react-i18next";
+import dayjs from "dayjs";
 
 function updateTheme(theme: string) {
   document.body.setAttribute('theme-mode', theme);
@@ -42,4 +44,22 @@ export async function useConfig(setConfig: (config: ICustomConfig) => void) {
       offConfigChange();
     }
   }, []);
+}
+
+
+export function useSetDayjsLocale() {
+  const { i18n } = useTranslation();
+  const setDayjsLocale = () => {
+    if (i18n.language === 'zh') {
+      dayjs.locale('zh-cn');
+    } else {
+      dayjs.locale('en-us');
+    }
+  };
+  setDayjsLocale()
+
+  return {
+    i18nLanguage: i18n.language,
+    setDayjsLocale
+  }
 }
