@@ -10,8 +10,6 @@ import MainConfigPanel from './components/MainConfigPanel';
 import { useState, useEffect, useRef } from 'react';
 import type { IRenderData } from '@/common/type';
 import { dataConditionFormatter, getConfig, getPreviewData, renderMainContentData } from './utils';
-import { useTranslation } from 'react-i18next';
-import dayjs from 'dayjs';
 
 export default function App() {
     useTheme();
