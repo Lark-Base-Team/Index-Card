@@ -1,3 +1,4 @@
+import '@lark-base-open/js-sdk/dist/style/dashboard.css';
 import './App.scss';
 import { dashboard, DashboardState } from "@lark-base-open/js-sdk";
 import './locales/i18n';
@@ -12,7 +13,7 @@ import type { IRenderData } from '@/common/type';
 import { dataConditionFormatter, getConfig, getPreviewData, renderMainContentData } from './utils';
 
 export default function App() {
-    useTheme();
+    const { bgColor} = useTheme();
 
     /** 是否配置/创建模式下 */
     const isConfig = dashboard.state === DashboardState.Config || dashboard.state === DashboardState.Create;
@@ -72,7 +73,10 @@ export default function App() {
     }, [i18nLanguage]);
 
     return (
-        <main className={classnames(isConfig ? 'top-border' : '', 'main')} ref={mainDomRef}>
+        <main 
+        className={classnames(isConfig ? 'top-border' : '', 'main')}
+        style={{backgroundColor: bgColor}}
+        ref={mainDomRef}>
             <MainContent renderData={renderData} mainDomRef={mainDomRef} />
             {isConfig && <MainConfigPanel setRenderData={setRenderData} />}
         </main>

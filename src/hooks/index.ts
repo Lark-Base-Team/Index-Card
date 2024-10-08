@@ -1,5 +1,5 @@
 import { bitable, dashboard } from "@lark-base-open/js-sdk";
-import { useLayoutEffect, useEffect } from "react";
+import { useLayoutEffect, useEffect, useState } from "react";
 import { ICustomConfig } from '@/common/type';
 import { useTranslation } from "react-i18next";
 import dayjs from "dayjs";
@@ -8,17 +8,23 @@ function updateTheme(theme: string) {
   document.body.setAttribute('theme-mode', theme);
 }
 
-/** 跟随主题色变化 */
 export function useTheme() {
+  const [bgColor, setBgColor] = useState('#ffffff');
   useLayoutEffect(() => {
-    bitable.bridge.getTheme().then((theme: string) => {
-      updateTheme(theme.toLocaleLowerCase());
+    dashboard.getTheme().then((res) => {
+      setBgColor(res.chartBgColor);
+      updateTheme(res.theme.toLocaleLowerCase());
     })
 
-    bitable.bridge.onThemeChange((e) => {
-      updateTheme(e.data.theme.toLocaleLowerCase());
+    dashboard.onThemeChange((res) => {
+      setBgColor(res.data.chartBgColor);
+      updateTheme(res.data.theme.toLocaleLowerCase());
     })
-  }, [])
+  }, []);
+
+  return {
+    bgColor
+  }
 }
 
 /** 配置用户配置 */
