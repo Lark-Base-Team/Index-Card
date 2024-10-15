@@ -167,16 +167,11 @@
   border-radius: 8px;
 
   .semi-select {
-    background-color: #fff;
-
-    .semi-select-selection-text {
-      color: #000;
-    }
+    background-color: var(--bg-grey-warp);
   }
 
   .semi-input-wrapper {
-    background-color: #fff;
-    color: #000;
+    background-color: var(--bg-grey-warp);
   }
 }
 
