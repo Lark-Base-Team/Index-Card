@@ -107,43 +107,43 @@ export const getDateRangeTimestamp = (dateTypeRange: DateRangeType) => {
       return { startTime, endTime };
     },
     [FilterDuration.CurrentWeek]: () => {
-      const startTime = dayjs().startOf('week').valueOf();
-      const endTime = dayjs().endOf('week').valueOf();
+      const startTime = dayjs().startOf('week').startOf('day').valueOf();
+      const endTime = dayjs().endOf('week').endOf('day').valueOf();
       return { startTime, endTime };
     },
     [FilterDuration.LastWeek]: () => {
-      const startTime = dayjs().subtract(1, 'week').startOf('week').valueOf();
-      const endTime = dayjs().subtract(1, 'week').endOf('week').valueOf();
+      const startTime = dayjs().subtract(1, 'week').startOf('week').startOf('day').valueOf();
+      const endTime = dayjs().subtract(1, 'week').endOf('week').endOf('day').valueOf();
       return { startTime, endTime };
     },
     [FilterDuration.CurrentMonth]: () => {
-      const startTime = dayjs().startOf('month').valueOf();
-      const endTime = dayjs().endOf('month').valueOf();
+      const startTime = dayjs().startOf('month').startOf('day').valueOf();
+      const endTime = dayjs().endOf('month').endOf('day').valueOf();
       return { startTime, endTime };
     },
     [FilterDuration.LastMonth]: () => {
-      const startTime = dayjs().subtract(1, 'month').startOf('month').valueOf();
-      const endTime = dayjs().subtract(1, 'month').endOf('month').valueOf();
+      const startTime = dayjs().subtract(1, 'month').startOf('month').startOf('day').valueOf();
+      const endTime = dayjs().subtract(1, 'month').endOf('month').endOf('day').valueOf();
       return { startTime, endTime };
     },
     [MyFilterDurationEnum.CurrentQuarter]: () => {
-      const startTime = dayjs().startOf('quarter').valueOf();
-      const endTime = dayjs().endOf('quarter').valueOf();
+      const startTime = dayjs().startOf('quarter').startOf('day').valueOf();
+      const endTime = dayjs().endOf('quarter').endOf('day').valueOf();
       return { startTime, endTime };
     },
     [MyFilterDurationEnum.LastQuarter]: () => {
-      const startTime = dayjs().subtract(1, 'quarter').startOf('quarter').valueOf();
-      const endTime = dayjs().subtract(1, 'quarter').endOf('quarter').valueOf();
+      const startTime = dayjs().subtract(1, 'quarter').startOf('quarter').startOf('day').valueOf();
+      const endTime = dayjs().subtract(1, 'quarter').endOf('quarter').endOf('day').valueOf();
       return { startTime, endTime };
     },
     [MyFilterDurationEnum.CurrentYear]: () => {
-      const startTime = dayjs().startOf('year').valueOf();
-      const endTime = dayjs().endOf('year').valueOf();
+      const startTime = dayjs().startOf('year').startOf('day').valueOf();
+      const endTime = dayjs().endOf('year').endOf('day').valueOf();
       return { startTime, endTime };
     },
     [MyFilterDurationEnum.LastYear]: () => {
-      const startTime = dayjs().subtract(1, 'year').startOf('year').valueOf();
-      const endTime = dayjs().subtract(1, 'year').endOf('year').valueOf();
+      const startTime = dayjs().subtract(1, 'year').startOf('year').startOf('day').valueOf();
+      const endTime = dayjs().subtract(1, 'year').endOf('year').endOf('day').valueOf();
       return { startTime, endTime };
     },
     [FilterDuration.TheLastWeek]: () => {
@@ -261,7 +261,16 @@ export const getMomYoyDateRange = (dateTypeRange: DateRangeType, momYoyCalcMetho
   const unit = getSubtractParamsUnit(dateTypeRange, momYoyCalcMethod);
   const { startTime, endTime } = getDateRangeTimestamp(dateTypeRange);
   const timeStart = dayjs(startTime).subtract(value, unit as any).valueOf();
-  const timeEnd = dayjs(endTime).subtract(value, unit as any).valueOf();
+  let timeEnd = dayjs(endTime).subtract(value, unit as any).valueOf();
+
+  // dayjs的subtract方法计算的时间在处理月份和季度时比如11月30往前推一个月会变成10月30，正确情况应该是10月31，所以需要手动兼容
+  if(unit === 'month' && (dateTypeRange === FilterDuration.CurrentMonth || dateTypeRange === FilterDuration.LastMonth)){
+    timeEnd = dayjs(timeEnd).endOf('month').endOf('day').valueOf();
+  }
+
+  if(unit === 'quarter' && (dateTypeRange === MyFilterDurationEnum.CurrentQuarter || dateTypeRange === MyFilterDurationEnum.LastQuarter)){
+    timeEnd = dayjs(timeEnd).endOf('quarter').endOf('day').valueOf();
+  }
   return { startTime: timeStart, endTime: timeEnd };
 }
 
