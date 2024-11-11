@@ -28,28 +28,6 @@ export default function App() {
 
     const mainDomRef = useRef<HTMLDivElement>(null);
 
-    // 因接口限制，需要手动拼接多次saveConfig和getData会触发多次configChange事件
-    // 又因为configChange事件不是立即触发，需要设置延时，在延时范围内不触发change事件，暂定3000毫秒
-    // let delayedTime = 3000;
-    // let dataChangeFlag = false;
-
-    // const renderMain = async () => {
-    //     dataChangeFlag = true;
-    //     const { dataCondition, customConfig } = await getConfig();
-    //     const newCustomConfig = dataConditionFormatter(dataCondition, customConfig);
-    //     const value = await getData(dataCondition, customConfig);
-    //     renderMainContentData(newCustomConfig, value, setRenderData);
-    //     setTimeout(() => {
-    //         dataChangeFlag = false;
-    //     }, delayedTime)
-    // }
-
-    // const dataChangeHandler = async () => {
-    //     if (!dataChangeFlag) {
-    //         renderMain()
-    //     }
-    // }
-
     const renderMain = async () => {
         const { dataCondition, customConfig } = await getConfig();
         const newCustomConfig = dataConditionFormatter(dataCondition, customConfig);

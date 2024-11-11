@@ -1,4 +1,4 @@
-import { IDataRange, Rollup, FilterDuration, FieldType } from '@lark-base-open/js-sdk';
+import { Rollup, FilterDuration, FieldType } from '@lark-base-open/js-sdk';
 import type { ColorName } from '@/components/ColorPicker';
 import { statisticalTypeList, momOrYoyCalcMethodList, momOrYoyCalcTypeList, iconStyleList, dataFormatList, icons } from '@/common/constant';
 

@@ -1,5 +1,5 @@
 import { IconMinus, IconTriangleUp, IconTriangleDown, IconFilledArrowUp, IconFilledArrowDown, IconArrowUpRight, IconArrowDownRight } from '@douyinfe/semi-icons';
-import { FilterDuration, SourceType, Rollup, FieldType } from "@lark-base-open/js-sdk";
+import { FilterDuration, Rollup, FieldType } from "@lark-base-open/js-sdk";
 import { t } from 'i18next';
 import type { ICustomConfig } from '@/common/type'
 import { MyFilterDurationEnum } from '@/common/type'

@@ -1,4 +1,4 @@
-import { bitable, dashboard } from "@lark-base-open/js-sdk";
+import { dashboard } from "@lark-base-open/js-sdk";
 import { useLayoutEffect, useEffect, useState } from "react";
 import { ICustomConfig } from '@/common/type';
 import { useTranslation } from "react-i18next";
